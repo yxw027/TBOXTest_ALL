@@ -53,7 +53,6 @@ static void MMask_writeFormatInformation(int version, int width, unsigned char *
 
 #define MASKMAKER(__exp__) \
 	int x, y;\
-\
 	for(y=0; y<width; y++) {\
 		for(x=0; x<width; x++) {\
 			if(*s & 0x80) {\

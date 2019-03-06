@@ -7,7 +7,7 @@ QT += network
 QT += dbus
 QT += multimedia
 
-#TARGET += TBOXTest_ALL
+#TARGET += TBOXTest
 
 CONFIG += c++11
 CONFIG += qdbus

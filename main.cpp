@@ -1,9 +1,9 @@
 #include <QGuiApplication>
-#include <mainwindow.h>
 #include <QDebug>
 #include <QString>
 #include <QSize>
 #include <QCoreApplication>
+#include "mainwindow.h"
 
 MainWindow* mainwindow = NULL;
 

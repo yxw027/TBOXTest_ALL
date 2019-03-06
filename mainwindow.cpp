@@ -6,23 +6,17 @@
 
 bool stop_monitorusb = false;
 char str_iccid[21]={0};
-QString p_name="";
-QString p_model="";
-QString pn_num="";
 QString str_imei="";
 QString str_imsi="";
-QString sim_num="";
-QString tBoxSN3="0000";
-QString serial_show="";
-bool open_db_flag = true;
 bool remove_flag = false;
 char software_version[15]={0};
 
 monitorusb::monitorusb()
 {
     udev = udev_new();
-    if (!udev) {
-        qDebug()<<"udev_new fail";
+    if (!udev) 
+    {
+        DEBUG_CHAR("udev_new fail");
     }
     mon = udev_monitor_new_from_netlink(udev, "udev");
     udev_monitor_filter_add_match_subsystem_devtype(mon, "usb", NULL);
@@ -32,23 +26,19 @@ monitorusb::monitorusb()
     udev_enumerate_add_match_subsystem(enumerate, "usb");
     udev_enumerate_scan_devices(enumerate);
     devices = udev_enumerate_get_list_entry(enumerate);
-    udev_list_entry_foreach(dev_list_entry, devices) {
+    udev_list_entry_foreach(dev_list_entry, devices)
+    {
         const char *path;
         path = udev_list_entry_get_name(dev_list_entry);
         dev = udev_device_new_from_syspath(udev, path);
-
-        dev = udev_device_get_parent_with_subsystem_devtype(
-                    dev,
-                    "usb",
-                    "usb_device");
-        if (!dev) {
-            printf("Unable to find parent usb device.");
-            DEBUGLOG;
+        dev = udev_device_get_parent_with_subsystem_devtype(dev, "usb", "usb_device");
+        if (!dev)
+        {
+            DEBUG_CHAR("Unable to find parent usb device.");
             fflush(stdout);
             //emit mainwindow->thread_m->udisk_disconnect();
             //exit(1);
         }
-
         udev_device_unref(dev);
     }
     udev_enumerate_unref(enumerate);
@@ -62,7 +52,8 @@ void monitorusb::run()
     struct timeval tv;
     int ret;
     sleep(10);
-    while (true) {
+    while (true)
+    {
         if(stop_monitorusb)
         {
             break;
@@ -71,28 +62,29 @@ void monitorusb::run()
         FD_SET(fd, &fds);
         tv.tv_sec = 0;
         tv.tv_usec = 0;
-
         ret = select(fd+1, &fds, NULL, NULL, &tv);
-        if (ret > 0 && FD_ISSET(fd, &fds)) {
+        if (ret > 0 && FD_ISSET(fd, &fds)) 
+        {
             dev = udev_monitor_receive_device(mon);
-            if (dev) {
+            if (dev)
+            {
                 strcpy(buf_devpath, udev_device_get_devpath(dev));
                 strcpy(buf, udev_device_get_action(dev));
                 fflush(stdout);
                 QString str = buf;
+                DEBUG_PARAM("str:", str);
                 QString str_type = buf_devpath;
                 DEBUG_PARAM("str_type:", str_type);
-                if(str.contains("remove") )
+                if(str.contains("remove"))
                 {
-                    if( str_type.contains("usb2"))
+                    if(str_type.contains("usb2"))
                     {
-                        DEBUGLOG;
                         remove_flag = true;
                         DEBUG_PARAM("remove_flag:", remove_flag);
                         emit mainwindow->thread_m->device_disconnect();
                         this->quit();
                     }
-                    else if (  str_type.contains("usb1") )
+                    else if (str_type.contains("usb1"))
                     {
                         DEBUGLOG;
                         emit mainwindow->thread_m->udisk_disconnect();
@@ -103,7 +95,8 @@ void monitorusb::run()
                 fflush(stdout);
                 udev_device_unref(dev);
             }
-            else {
+            else 
+            {
                 DEBUGLOG;
                 printf("No Device from receive_device(). An error occured.\n");
                 fflush(stdout);
@@ -112,12 +105,234 @@ void monitorusb::run()
             }
         }
         msleep(200);
-        printf(".");
         fflush(stdout);
     }
     udev_unref(udev);
 }
 /////////////////////////FortuneThread//////////////////////////////
+FortuneThread::FortuneThread(): QQuickImageProvider(QQuickImageProvider::Pixmap)
+{
+    db_init_flag = false;
+    m_serial = "";
+    tBoxSN1= "";
+    tBoxSN2 = "";
+    tBoxSN3= "";
+    phone_number="";
+    stop = false;
+    read = false;
+    write_flag =true;
+    change_sn = false;
+    sos_flag = true;
+    btName="";
+    bt_flag = false;
+    m_bt_flag = false;
+    m_checkItem = "";
+    hwIMEI = "";
+    lock_flag = true;
+    unlock_flag = true;
+    m_vpn = "";
+    m_bA5 = false;
+    m_bTB = false;
+    m_power = "";
+    m_acc = 0;
+    m_sProductName = "";
+    m_sProductModel = "";
+    m_sProductNumber = "";
+}
+
+FortuneThread::~FortuneThread()
+{
+    mutex.lock();
+    quit = true;
+    cond.wakeOne();
+    mutex.unlock();
+    wait();
+}
+//读取U盘的数据并封包
+void FortuneThread::readDisk()
+{
+    DEBUGLOG;
+    if( access("/run/media/usb/1.ini", 0) == 0 )
+    {
+        DEBUG_CHAR("1.ini file exist!!!");
+        //power
+        char cmd[128]={0};
+        char buf_power[8]={0};
+        double power_val=0;
+        sprintf(cmd, "cat /sys/devices/platform/soc/481c0000.adc-keys/tbox_current_detection/BAT");
+        FILE* fl = popen(cmd, "r");
+        if(fl==NULL)
+        {
+            printf("open file fail\n");
+        }
+        fgets(buf_power, 512 ,fl);
+        power_val = atof(buf_power)/100;
+        DEBUG_PARAM2("buf_power:", buf_power, "power_val:", power_val);
+        if((13.5<power_val) && (power_val<18.0))
+        {
+            DEBUGLOG;
+            emit power_signal(power_val, true);
+        }
+        else
+        {
+            DEBUGLOG;
+            emit power_signal(power_val, false);
+        }
+        pclose(fl);
+        
+        sk = setting->value("SK/sk").toString();
+        DEBUG_PARAM("sk:", sk);
+        tBoxSN1 = setting->value("TBoxSN1/sn1").toString();
+        DEBUG_PARAM("TBoxSN1:", tBoxSN1);
+        tBoxSN2 = setting->value("TBoxSN2/sn2").toString();
+        DEBUG_PARAM("TBoxSN2:", tBoxSN2);
+        if(tBoxSN2.length() == 2)
+        {
+            if(QString::compare("00", tBoxSN2) == 0)
+            {
+                DEBUGLOG;
+                vehicle="通用型";
+            }
+            else if(QString::compare("01", tBoxSN2) == 0)
+            {
+                DEBUGLOG;
+                vehicle="EV200";
+            }
+            else if(QString::compare("02", tBoxSN2) == 0)
+            {
+                DEBUGLOG;
+                vehicle="A6";
+            }
+            else if(QString::compare("03", tBoxSN2) == 0)
+            {
+                DEBUGLOG;
+                vehicle="EC3";
+            }
+            else
+            {
+                vehicle=tBoxSN2;
+            }
+            DEBUG_PARAM("vehicle:", vehicle);
+            tBoxSN3 = setting->value("TBoxSN3/sn3").toString();
+            DEBUG_PARAM("SN3:", tBoxSN3);
+            btName = tBoxSN3.mid(3);
+            DEBUG_PARAM("btName/tBoxSN3:", btName);
+        }
+        else
+        {
+            tBoxSN3 = "";
+            vehicle = setting->value("vehicle/modle").toString();
+            DEBUG_PARAM("vehicle:", vehicle);
+        }
+        tableModel->setFileNamebyFilePath("车型号", vehicle);
+        
+        phone_number = setting->value("Phone/number").toString();
+        DEBUG_PARAM("phone_number:", phone_number);
+        m_sProductName = setting->value("NAME/pname").toString();
+        DEBUG_PARAM("p_name:", m_sProductName);
+        m_sProductModel = setting->value("Version/pversion").toString();
+        DEBUG_PARAM("p_model:", m_sProductModel);
+        m_sProductNumber = setting->value("PN/pn").toString();
+        DEBUG_PARAM("pn_num:", m_sProductNumber);
+        m_acc = setting->value("ACC/value", 0).toInt();
+        DEBUG_PARAM("acc value:", m_acc);
+        m_power = setting->value("power/volage", "").toString();
+        DEBUG_PARAM("power:", m_power);
+        
+        emit setTitleText(mainwindow->m_sProName);
+    }
+    else 
+    {
+        stop = true;
+        emit udisk_disconnect();
+        DEBUG_CHAR("1.ini file no exist!!!");
+    }
+}
+/*//读取U盘的数据并封包
+void FortuneThread::readDiskIMEI()
+{
+    DEBUGLOG;
+    if( access("/run/media/usb/1.ini", 0) == 0 )
+    {
+        DEBUG_CHAR("1.ini file exist!!!");
+        //power
+        char cmd[128]={0};
+        char buf_power[8]={0};
+        double power_val=0;
+        sprintf(cmd, "cat /sys/devices/platform/soc/481c0000.adc-keys/tbox_current_detection/BAT");
+        FILE* fl = popen(cmd, "r");
+        if(fl==NULL)
+        {
+            printf("open file fail\n");
+        }
+        fgets(buf_power, 512 ,fl);
+        power_val = atof(buf_power)/100;
+        DEBUG_PARAM("power_val:", power_val);
+        if((13.5<power_val) && (power_val<18.0))
+        {
+            DEBUGLOG;
+            emit power_signal(power_val, true);
+        }
+        else
+        {
+            DEBUGLOG;
+            emit power_signal(power_val, false);
+        }
+        pclose(fl);
+        
+        sk = setting->value("SK/sk").toString();
+        qDebug("SK=%s", qPrintable(sk));
+        tBoxSN1 = setting->value("TBoxSN1/sn1").toString();
+        DEBUG_PARAM("TBoxSN1:", tBoxSN1);
+        tBoxSN2 = setting->value("TBoxSN2/sn2").toString();
+        DEBUG_PARAM("TBoxSN2:", tBoxSN2);
+        if(QString::compare("00", tBoxSN2) == 0)
+        {
+            DEBUGLOG;
+            vehicle="通用型";
+        }
+        else if(QString::compare("01", tBoxSN2) == 0)
+        {
+            DEBUGLOG;
+            vehicle="EV200";
+        }
+        else if(QString::compare("02", tBoxSN2) == 0)
+        {
+            DEBUGLOG;
+            vehicle="A6";
+        }
+        else if(QString::compare("03", tBoxSN2) == 0)
+        {
+            DEBUGLOG;
+            vehicle="EC3";
+        }
+        else
+        {
+            vehicle=tBoxSN2;
+        }
+        DEBUG_PARAM("vehicle:", vehicle);
+        tBoxSN3 = setting->value("TBoxSN3/sn3").toString();
+        btName = tBoxSN3.mid(3);
+        DEBUG_PARAM("btName/tBoxSN3:", btName);
+        phone_number = setting->value("Phone/number").toString();
+        DEBUG_PARAM("phone_number:", phone_number);
+        p_name = setting->value("NAME/pname").toString();
+        DEBUG_PARAM("p_name:", qPrintable(p_name));
+        p_model = setting->value("ProModel/pmodel").toString();
+        DEBUG_PARAM("p_model:", p_model);
+        
+        emit setTitleText(mainwindow->m_sProName);
+    }
+    else
+    {
+        stop = true;
+        emit udisk_disconnect();
+        DEBUG_CHAR("1.ini file no exist!!!");
+    }
+    DEBUGLOG;
+    tableModel->setFileNamebyFilePath("车型号", vehicle);
+}
+*/
 void FortuneThread::iniTableViewByCarinfo()
 {
     int i;
@@ -172,6 +387,209 @@ void FortuneThread::iniTableViewByqr()
     qDebug()<<m_msiQRitem.keys();
 }
 
+void FortuneThread::initListView()
+{
+    DEBUGLOG;
+    if(access("/run/media/usb/1.ini", 0) == 0 )
+    {
+        DEBUG_CHAR("1.ini file exist!!!");
+        setting = new QSettings(QString::fromStdString("/run/media/usb/1.ini"), QSettings::IniFormat);
+        setting->setIniCodec("UTF-8");
+        QString checkItem = setting->value("CfgItem/value").toString();
+        DEBUG_PARAM("checkItem:", checkItem);
+        bool ok;
+        m_checkItem = QString("%1").arg(checkItem.toInt(&ok, 16)&0xFFFFFF, 4*checkItem.length(), 2, QLatin1Char('0'));
+        DEBUG_PARAM("checkItem:", m_checkItem);
+        
+        m_vpn = setting->value("VPN/value").toString();
+        QString vpn = QString("%1").arg(m_vpn.toInt(&ok, 16)&0xFFFFFF, 4*checkItem.length(), 2, QLatin1Char('0'));
+        if(m_vpn.left(2) == "00")
+        {
+            vpn.prepend("0000");
+        }
+        DEBUG_PARAM2("vpn:", m_vpn, "vpn:", vpn);
+        for(int i=0; i<8; ++i)
+        {
+            if(vpn.at(16+i).digitValue() == 1 && vpn.at(i).digitValue() == 0)
+            {
+                m_bA5 = true;
+            }
+            else if(vpn.at(16+i).digitValue() == 1 && vpn.at(i).digitValue() == 1)
+            {
+                m_bTB = true;
+            }
+        }
+        DEBUG_PARAM2("A5 ivi:", m_bA5, "TBOX ivi:", m_bTB);
+    }
+    
+//    QString str[] = {"[1] 配置", "[2] CAN通讯", "[3] 网络连接",
+//                     "[4] 主电电源测试", "[5]BLE通信检测", "[6]NFC",
+//                     "[7]BLE连接检测", "[8]常闭测试", "[9]常开测试",
+//                     "[10]动力开关检测", "[11]寻车检测", "[12] GPS天线检测",
+//                     "[13] GPS信号", "[14] ACC OFF", "", ""};
+//    QString str[] = {"[1] 配置", "[2] CAN通讯", "[3] 6轴传感器",  "[4] WIFI",
+//                       "[5] 网络连接", "[6] SOS", "[7] GPS天线检测", "[8] GPS信号", 
+//                     "[9] 主电电源测试", "[10] ACC OFF", "", ""};
+    
+    FileListItem item;
+    QString str[] = {"[01] 配置", "CAN通讯", "CAN唤醒", "6轴传感器", "WIFI", "网络连接(A5)",
+                     "网络连接(TBOX)", "EMMC", "充电检测", "SOS", "GPS天线检测", "GPS信号", 
+                     "主电电源测试", "BLE通信检测", "BLE连接检测", "NFC", "常闭测试", "常开测试", 
+                     "动力开关检测", "寻车检测", "ACC OFF", "", ""};
+    item = FileListItem(str[0], "未测试", 0 );
+    listModel->addFileListItem(item);
+    int index = 1;
+    QString strIndex;
+    for(int i=1; i<(COUNT_CHECK-2); i++) 
+    {
+        if(i<=m_checkItem.size() && m_checkItem.at(i-1).digitValue() == 1)
+        {
+            if(i == 5 && !m_bA5)
+            {
+                DEBUGLOG;
+                continue;
+            }
+            if(i == 6 && !m_bTB)
+            {
+                DEBUGLOG;
+                continue;
+            }
+            if((index+1) < 10)
+            {
+                strIndex = QString("0%1").arg(index+1);
+            }
+            else
+            {
+                strIndex = QString("%1").arg(index+1);
+            }
+            item = FileListItem(QString("[%1] %2").arg(strIndex).arg(str[i]), "未测试", index);
+            listModel->addFileListItem(item);
+            index++;
+        }
+    }
+    item = FileListItem(str[COUNT_CHECK-2], "未测试", index );
+    listModel->addFileListItem(item);
+    index++;
+    item = FileListItem(str[COUNT_CHECK-1], "未测试", index );
+    listModel->addFileListItem(item);
+    for(int i=0;i<listModel->rowCount(); ++i)
+    {
+        DEBUG_PARAM2("index:", i, "listmodel:", listModel->getFilePathByIndex(i));
+    }
+}
+
+void FortuneThread::init()
+{
+    DEBUGLOG;
+    sleep(20);
+    system("dhclient usb0");
+    FILE* ptr;
+    QString str_usb0;
+    char check_usb0[254];
+    int count=0;
+    while(1)
+    {
+        count++;
+        str_usb0.clear();
+        memset(check_usb0, 0, 254);
+        ptr = popen("ifconfig usb0", "r");
+        fread(check_usb0, 1, 254, ptr);
+        str_usb0 = check_usb0;
+        DEBUG_PARAM("str_usb0:", str_usb0);
+        if(str_usb0.contains("usb0") && str_usb0.contains("192.168.100"))
+        {
+            DEBUGLOG;
+            break;
+        }
+        else
+        {
+            system("dhclient usb0");
+        }
+        
+        if(count == 10)
+        {
+            DEBUG_PARAM("Check USB count:", count);
+            stop = true;
+//            emit device_disconnect();
+            break;
+        }
+        sleep(1);
+    }
+    pclose(ptr);
+
+    DEBUGLOG;
+//    QString str[] = {"need_set_mode", "qrcode", "send_set_file", "can_comm", "ivi",
+//                     "major_power", "btcom","nfc", "btCon", "lock",
+//                     "unlock", "outage", "lamp", "gps_open", "gps_signal",
+//                     "acc_off"};
+    QString str[] = {"need_set_mode", "qrcode", "send_set_file", "can_comm", "can_awake",
+                     "6axis_sensor", "wifi",  "ivi", "iviT", "emmc", "charge", "air_bag",
+                     "gps_open", "gps_signal", "major_power", "btcom", "btCon", "nfc",
+                     "lock", "unlock", "outage", "lamp", "acc_off"};
+    m_vsTestName.clear();
+    for(int i=0; i<3; ++i)
+    {
+        m_vsTestName.append(str[i]);
+    }
+    for(int i=3; i<COUNT_CHECK; i++)
+    {
+        if((i-3)<m_checkItem.size() && m_checkItem.at(i-3).digitValue() == 1)
+        {
+            if(i == 7 && !m_bA5)
+            {
+                continue;
+            }
+            if(i == 8 && !m_bTB)
+            {
+                continue;
+            }
+            m_vsTestName.append(str[i]);
+        }
+    }
+    for(int i=0; i<m_vsTestName.count(); ++i)
+    {
+        DEBUG_PARAM2("index:", i, "testname:", m_vsTestName.at(i));
+    }
+    
+    DEBUGLOG;
+    int connect_num=0;
+    bool socket_connect = false;
+    socket_m = new QTcpSocket;
+    connect(socket_m, SIGNAL(readyRead()), this, SLOT(read_data()));
+    do{
+        if( !socket_m->waitForConnected(1000)) 
+        {
+            socket_m->connectToHost("192.168.100.1", 20001);
+            if( socket_m->waitForConnected())
+            {
+                DEBUG_CHAR("socket connected");
+                emit show_main_page();
+                socket_connect = true;
+            }
+            else
+            {
+                socket_m->disconnectFromHost();
+            }
+        }
+        sleep(2);
+        connect_num++;
+        DEBUG_PARAM("connect_num:",connect_num);
+        if(connect_num>90)
+        {
+            DEBUGLOG;
+            stop = true;
+            emit device_disconnect();
+            break;
+        }
+    }while( !socket_connect );
+    DEBUGLOG;
+    if(remove_flag)
+    {
+      DEBUGLOG;
+      stop = true;
+    }
+}
+
 bool FortuneThread::analyze_section_data()
 {
     uint16_t head=0;
@@ -201,7 +619,7 @@ bool FortuneThread::analyze_section_data()
 //        break;
 //    }
 }
-
+/*
 void FortuneThread::handle_cfg_mode()
 {
     DEBUGLOG;
@@ -379,7 +797,6 @@ void FortuneThread::handle_cfg_modeIMEI()
     {
         tableMode2->setFileNamebyFilePath("硬件版本号", hwIMEI);
     }
-    /*
     //APP版本
     uint8_t appLen=0;
     char app_buf[8]={0};
@@ -412,7 +829,7 @@ void FortuneThread::handle_cfg_modeIMEI()
     emit sysVersion(sys_buf);
     DEBUG_PARAM("sysLen:", sysLen);
     DEBUG_PARAM("sys version:", sys_buf);
-    */
+    
     uint8_t sysLen=0;//system version
     char sys_buf[16]={0};
     memcpy(&sysLen, readMsg+offset, 1);
@@ -443,7 +860,7 @@ void FortuneThread::handle_cfg_modeIMEI()
         DEBUG_CHAR("cfg mode failed");
     }
 }
-
+*/
 void FortuneThread::handle_cfg_modeNew()
 {
     DEBUGLOG;
@@ -481,6 +898,10 @@ void FortuneThread::handle_cfg_modeNew()
     }
     memcpy(str_iccid, readMsg+8, tmpIndex-8);
     DEBUG_PARAM("str_iccid:", str_iccid);
+    if(mainwindow->m_bSIM && str_iccid == "")
+    {
+        emit errorCode("iccid is empty!", 0);
+    }
     tableModel->setFileNamebyFilePath("ICCID", str_iccid);
     int tmpIndex1 = ++tmpIndex;
     
@@ -503,7 +924,7 @@ void FortuneThread::handle_cfg_modeNew()
         if(QString::compare(imei, "") == 0)
         {
             DEBUG_CHAR("IMEI is empty!!!");
-            emit errorCode("IMEI", 4);
+            emit errorCode("IMEI is empty", 4);
         }
         else
         {
@@ -534,6 +955,10 @@ void FortuneThread::handle_cfg_modeNew()
         }
     }
     memcpy(software_version, readMsg+tmpIndex1, tmpIndex-tmpIndex1);
+    if(software_version == "")
+    {
+        emit errorCode("4G软件版本号为空", 0);
+    }
     DEBUG_PARAM("4g software version:", software_version);
     tableMode2->setFileNamebyFilePath("软件版本号", software_version);
     tmpIndex1 = ++tmpIndex;
@@ -602,6 +1027,10 @@ void FortuneThread::handle_cfg_modeNew()
         }
     }
     memcpy(hw, readMsg+tmpIndex1, tmpIndex-tmpIndex1);
+    if(hw == "")
+    {
+        emit errorCode("硬件版本号为空", 6);
+    }
     DEBUG_PARAM("hw version:", hw);
     tableMode2->setFileNamebyFilePath("硬件版本号", hw);
     
@@ -640,21 +1069,20 @@ void FortuneThread::handleqrCode()
     {
         if(m_msiQRitem.find("产品名称") != m_msiQRitem.end())
         {
-            DEBUG_PARAM("product name:", p_name);
-            QByteArray ba = p_name.toUtf8();
+            DEBUG_PARAM("product name:", m_sProductName);
             qrcodeStr.append("产品名称: ");
-            qrcodeStr.append(ba.data());
+            qrcodeStr.append(m_sProductName.toLatin1().data());
             qrcodeStr.append("\n");
-            tableModelQR->setFileNamebyFilePath("产品名称", p_name);
+            tableModelQR->setFileNamebyFilePath("产品名称", m_sProductName);
         }
         
         if(m_msiQRitem.find("产品型号") != m_msiQRitem.end())
         {
-            DEBUG_PARAM("product model:", p_model);
+            DEBUG_PARAM("product model:", m_sProductModel);
             qrcodeStr.append("产品型号: ");
-            qrcodeStr.append(p_model.toLatin1().data());
+            qrcodeStr.append(m_sProductModel.toLatin1().data());
             qrcodeStr.append("\n");
-            tableModelQR->setFileNamebyFilePath("产品型号", p_model);
+            tableModelQR->setFileNamebyFilePath("产品型号", m_sProductModel);
         }
 
         if(m_msiQRitem.find("软件版本号") != m_msiQRitem.end())
@@ -677,12 +1105,13 @@ void FortuneThread::handleqrCode()
 
         if(m_msiQRitem.find("SIM/N") != m_msiQRitem.end())
         {
-            DEBUG_PARAM("SIM/N:", sim_num.toLatin1().data());
+            DEBUG_PARAM("SIM/N:", mainwindow->m_sSIMnumber.toLatin1().data());
             qrcodeStr.append("SIM/N: ");
-            qrcodeStr.append(sim_num.toLatin1().data());
+            qrcodeStr.append(mainwindow->m_sSIMnumber.toLatin1().data());
             qrcodeStr.append("\n");
-            tableModelQR->setFileNamebyFilePath("SIM/N",sim_num.toLocal8Bit());
+            tableModelQR->setFileNamebyFilePath("SIM/N",mainwindow->m_sSIMnumber.toLocal8Bit());
         }
+        
         //ICCID
         memset(buf, 0, 35);
         for(i=0; i<20; i++)
@@ -700,6 +1129,7 @@ void FortuneThread::handleqrCode()
             qrcodeStr.append("\n");
         }
         content.clear();
+        
         //IMEI
         memset(buf, 0, 35);
         for(i=0; i<15; i++)
@@ -723,6 +1153,9 @@ void FortuneThread::handleqrCode()
             qrcodeStr.append("\n");
         }
         content.clear();
+        mainwindow->updateOtherByIccid(str_iccid, "IMEI", str_imei);
+        sync();
+        
         //IMSI
         memset(buf, 0, 35);
         for(i=0; i<15; i++)
@@ -746,6 +1179,9 @@ void FortuneThread::handleqrCode()
             qrcodeStr.append("\n");
         }
         content.clear();
+        mainwindow->updateOtherByIccid(str_iccid, "IMSI", str_imsi);
+        sync();
+        
         //序列号
         memset(buf, 0, 35);
         for(i=0; i<30; i++)
@@ -757,10 +1193,10 @@ void FortuneThread::handleqrCode()
         if(m_msiQRitem.find("SN") != m_msiQRitem.end())
         {
             qrcodeStr.append("SN: ");
-            qrcodeStr.append(serial_show);
+            qrcodeStr.append(mainwindow->m_sSerialShow);
             qrcodeStr.append("\n");
             content.clear();
-            tableModelQR->setFileNamebyFilePath("SN", serial_show);
+            tableModelQR->setFileNamebyFilePath("SN", mainwindow->m_sSerialShow);
         }
 
 /*
@@ -778,15 +1214,13 @@ void FortuneThread::handleqrCode()
 
         if(m_msiQRitem.find("P/N") != m_msiQRitem.end())
         {
+            DEBUG_PARAM("product number:", m_sProductNumber);
             qrcodeStr.append("P/N: ");
-            qrcodeStr.append(pn_num.toLatin1().data());
+            qrcodeStr.append(m_sProductNumber.toLatin1().data());
             qrcodeStr.append("\n");
-            tableModelQR->setFileNamebyFilePath("P/N", pn_num);
+            tableModelQR->setFileNamebyFilePath("P/N", m_sProductNumber);
         }
     }
-    mainwindow->updateOtherByIccid(str_iccid, "IMEI", str_imei);
-    mainwindow->updateOtherByIccid(str_iccid, "IMSI", str_imsi);
-    sync();
     DEBUG_PARAM("qrcodeStr:", qrcodeStr.data());
 }
 
@@ -954,11 +1388,16 @@ void FortuneThread::handleSetFile()
     tag = *(uint8_t*)(readMsg+5);
     taglen = *(uint16_t*)(readMsg+6);
     tagbody = *(uint8_t*)(readMsg+8);
-    DEBUG_PARAM("tagbody:", tagbody);
+    DEBUG_PARAM2("tag:", tag, "tagbody:", tagbody);
     if(tag == 0x61 && tagbody == 0x01)
     {
         DEBUGLOG;
         //emit nextOne();
+    }
+    else if(tagbody == 0)
+    {
+        stop = true;
+        emit errorCode("配置,返回值为0", 190);
     }
     else
     {
@@ -1041,11 +1480,15 @@ void FortuneThread::handle6AxisSensor()
         DEBUGLOG;
         //emit nextOne();
     }
+    else if(tagbody == 0)
+    {
+        stop = true;
+        emit errorCode("6轴传感器,返回值为0", 9);
+    }
     else
     {
-        DEBUG_CHAR("6轴传感器错误");
         stop = true;
-        emit errorCode("6轴传感器", 9);
+        emit errorCode("66轴传感器", 9);
     }
 }
 
@@ -1114,9 +1557,13 @@ void FortuneThread::handleIVIT()
         DEBUGLOG;
         //emit nextOne();
     }
+    else if(tagbody == 0)
+    {
+        stop = true;
+        emit errorCode("IVIT,返回值为0", 0);
+    }
     else
     {
-        qDebug()<<"IVIT检测错误,tag:"<<tag<<"tagbody:"<<tagbody;
         stop = true;
         emit errorCode("IVIT", 0);
     }
@@ -1137,9 +1584,13 @@ void FortuneThread::handleEMMC()
         DEBUGLOG;
         //emit nextOne();
     }
+    else if(tagbody == 0)
+    {
+        stop = true;
+        emit errorCode("EMMC,返回值为0", 270);
+    }
     else
     {
-        qDebug()<<"EMMC检测错误,tag:"<<tag<<"tagbody:"<<tagbody;
         stop = true;
         emit errorCode("EMMC", 270);
     }
@@ -1160,9 +1611,13 @@ void FortuneThread::handleCharge()
         DEBUGLOG;
         //emit nextOne();
     }
+    else if(tagbody == 0)
+    {
+        stop = true;
+        emit errorCode("充电,返回值为0", 280);
+    }
     else
     {
-        qDebug()<<"Charge检测错误,tag:"<<tag<<"tagbody:"<<tagbody;
         stop = true;
         emit errorCode("充电", 280);
     }
@@ -1263,6 +1718,11 @@ void FortuneThread::handleGPSOpen()
         DEBUGLOG;
         //emit nextOne();
     }
+    else if(tagbody == 0)
+    {
+        stop = true;
+        emit errorCode("GPS天线检测,返回值为0", 140);
+    }
     else
     {
         stop = true;
@@ -1342,6 +1802,11 @@ void FortuneThread::handleMajorPower()
         DEBUGLOG;
         //emit nextOne();
     }
+    else if(tagbody == 0)
+    {
+        stop = true;
+        emit errorCode("主电源,返回值为0", 160);
+    }
     else
     {
         stop = true;
@@ -1376,8 +1841,8 @@ void FortuneThread::handleACCOFF()
     }
     disable_12V();
 }
-
-bool FortuneThread::detect_dark_current()//20秒以后每隔1秒读取一次暗电流，读3次，有2次小于120；成功
+//20秒以后每隔1秒读取一次暗电流，读3次，有2次小于120；成功
+bool FortuneThread::detect_dark_current()
 {
     sleep(30);
     for(int i=0;i<6;i++)
@@ -1392,7 +1857,6 @@ bool FortuneThread::detect_dark_current_read()
 {
     FILE *pstr; char cmd[128],buff[512];
     memset(cmd, 0,128);
-
     sprintf(cmd, "cat /sys/devices/platform/soc/481c0000.adc-keys/tbox_current_detection/tbox_current_detection");
     int num_flag=0;
     int darck_current=0;
@@ -1406,12 +1870,26 @@ bool FortuneThread::detect_dark_current_read()
         memset(buff, 0, 512);
         fgets(buff, 512 ,pstr);
         darck_current = atoi(buff);
-        DEBUG_PARAM("darcK_curr:::::::::::::::::::::::", darck_current);
+        DEBUG_PARAM("darcK_curr::::", darck_current);
         num_flag+=darck_current;
         pclose(pstr);
         QThread::msleep(200);
     }
-    if(num_flag/50<=100)
+    DEBUG_PARAM2("num_flag:", num_flag, "avr:", num_flag/50);
+    DEBUG_PARAM("acc value:", m_acc);
+    if(m_acc != 0)
+    {
+        DEBUGLOG;
+        if(num_flag/50 <= m_acc)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else if(num_flag/50<=100)
     {
         DEBUGLOG;
         return true;
@@ -1474,188 +1952,7 @@ QPixmap FortuneThread::requestPixmap(const QString &id, QSize *size, const QSize
     pixmap = generateQRcode(qrcodeStr);
     return pixmap;
 }
-//读取U盘的数据并封包
-void FortuneThread::readDisk()
-{
-    DEBUGLOG;
-    if( access("/run/media/usb/1.ini", 0) == 0 )
-    {
-        DEBUG_CHAR("1.ini file exist!!!");
-        //power
-        char cmd[128]={0};
-        char buf_power[8]={0};
-        double power_val=0;
-        sprintf(cmd, "cat /sys/devices/platform/soc/481c0000.adc-keys/tbox_current_detection/BAT");
-        FILE* fl = popen(cmd, "r");
-        if(fl==NULL)
-        {
-            printf("open file fail\n");
-        }
-        fgets(buf_power, 512 ,fl);
-        power_val = atof(buf_power)/100;
-        DEBUG_PARAM("buf_power:", buf_power);
-        DEBUG_PARAM("power_val:", power_val);
-        if((13.5<power_val) && (power_val<18.0))
-        {
-            DEBUGLOG;
-            emit power_signal(power_val, true);
-        }
-        else
-        {
-            DEBUGLOG;
-            emit power_signal(power_val, false);
-        }
-        pclose(fl);
-        
-        sk = setting->value("SK/sk").toString();
-        DEBUG_PARAM("sk:", sk);
-        tBoxSN1 = setting->value("TBoxSN1/sn1").toString();
-        DEBUG_PARAM("TBoxSN1:", tBoxSN1);
-        tBoxSN2 = setting->value("TBoxSN2/sn2").toString();
-        DEBUG_PARAM("TBoxSN2:", tBoxSN2);
-        if(tBoxSN2.length() == 2)
-        {
-            if(QString::compare("00", tBoxSN2) == 0)
-            {
-                DEBUGLOG;
-                vehicle="通用型";
-            }
-            else if(QString::compare("01", tBoxSN2) == 0)
-            {
-                DEBUGLOG;
-                vehicle="EV200";
-            }
-            else if(QString::compare("02", tBoxSN2) == 0)
-            {
-                DEBUGLOG;
-                vehicle="A6";
-            }
-            else if(QString::compare("03", tBoxSN2) == 0)
-            {
-                DEBUGLOG;
-                vehicle="EC3";
-            }
-            else
-            {
-                vehicle=tBoxSN2;
-            }
-            DEBUG_PARAM("vehicle:", vehicle);
-            tBoxSN3 = setting->value("TBoxSN3/sn3").toString();
-            DEBUG_PARAM("SN3:", tBoxSN3);
-            btName = tBoxSN3.mid(3);
-            DEBUG_PARAM("btName/tBoxSN3:", btName);
-        }
-        else
-        {
-            vehicle = setting->value("vehicle/modle").toString();
-            DEBUG_PARAM("vehicle:", vehicle);
-        }
-        
-        phone_number = setting->value("Phone/number").toString();
-        DEBUG_PARAM("phone_number:", phone_number);
-        p_name = setting->value("NAME/pname").toString();
-        DEBUG_PARAM("p_name:", p_name);
-        p_model = setting->value("Version/pversion").toString();
-        DEBUG_PARAM("p_model:", p_model);
-        pn_num = setting->value("PN/pn").toString();
-        DEBUG_PARAM("pn_num:", pn_num);
-        
-        emit setTitleText(mainwindow->m_sProName);
-    }
-    else 
-    {
-        stop = true;
-        emit udisk_disconnect();
-        DEBUG_CHAR("1.ini file no exist!!!");
-    }
-    DEBUGLOG;
-    tableModel->setFileNamebyFilePath("车型号", vehicle);
-}
-//读取U盘的数据并封包
-void FortuneThread::readDiskIMEI()
-{
-    DEBUGLOG;
-    if( access("/run/media/usb/1.ini", 0) == 0 )
-    {
-        DEBUG_CHAR("1.ini file exist!!!");
-        //power
-        char cmd[128]={0};
-        char buf_power[8]={0};
-        double power_val=0;
-        sprintf(cmd, "cat /sys/devices/platform/soc/481c0000.adc-keys/tbox_current_detection/BAT");
-        FILE* fl = popen(cmd, "r");
-        if(fl==NULL)
-        {
-            printf("open file fail\n");
-        }
-        fgets(buf_power, 512 ,fl);
-        power_val = atof(buf_power)/100;
-        DEBUG_PARAM("power_val:", power_val);
-        if((13.5<power_val) && (power_val<18.0))
-        {
-            DEBUGLOG;
-            emit power_signal(power_val, true);
-        }
-        else
-        {
-            DEBUGLOG;
-            emit power_signal(power_val, false);
-        }
-        pclose(fl);
-        
-        sk = setting->value("SK/sk").toString();
-        qDebug("SK=%s", qPrintable(sk));
-        tBoxSN1 = setting->value("TBoxSN1/sn1").toString();
-        DEBUG_PARAM("TBoxSN1:", tBoxSN1);
-        tBoxSN2 = setting->value("TBoxSN2/sn2").toString();
-        DEBUG_PARAM("TBoxSN2:", tBoxSN2);
-        if(QString::compare("00", tBoxSN2) == 0)
-        {
-            DEBUGLOG;
-            vehicle="通用型";
-        }
-        else if(QString::compare("01", tBoxSN2) == 0)
-        {
-            DEBUGLOG;
-            vehicle="EV200";
-        }
-        else if(QString::compare("02", tBoxSN2) == 0)
-        {
-            DEBUGLOG;
-            vehicle="A6";
-        }
-        else if(QString::compare("03", tBoxSN2) == 0)
-        {
-            DEBUGLOG;
-            vehicle="EC3";
-        }
-        else
-        {
-            vehicle=tBoxSN2;
-        }
-        DEBUG_PARAM("vehicle:", vehicle);
-        tBoxSN3 = setting->value("TBoxSN3/sn3").toString();
-        btName = tBoxSN3.mid(3);
-        DEBUG_PARAM("btName/tBoxSN3:", btName);
-        phone_number = setting->value("Phone/number").toString();
-        DEBUG_PARAM("phone_number:", phone_number);
-        p_name = setting->value("NAME/pname").toString();
-        DEBUG_PARAM("p_name:", qPrintable(p_name));
-        p_model = setting->value("ProModel/pmodel").toString();
-        DEBUG_PARAM("p_model:", p_model);
-        
-        emit setTitleText(mainwindow->m_sProName);
-    }
-    else
-    {
-        stop = true;
-        emit udisk_disconnect();
-        DEBUG_CHAR("1.ini file no exist!!!");
-    }
-    DEBUGLOG;
-    tableModel->setFileNamebyFilePath("车型号", vehicle);
-}
-
+/*
 void FortuneThread::tag_pack( uint8_t cmd, uint8_t tag, uint16_t tlvLen)
 {
     DEBUGLOG;
@@ -1787,7 +2084,7 @@ void FortuneThread::tag_packIMEI( uint8_t cmd, uint8_t tag, uint16_t tlvLen)
         break;
     }
 }
-
+*/
 void FortuneThread::tag_packNew(uint8_t cmd, uint8_t tag, uint16_t tlvLen)
 {
     DEBUGLOG;
@@ -1812,12 +2109,14 @@ void FortuneThread::tag_packNew(uint8_t cmd, uint8_t tag, uint16_t tlvLen)
             offset += 2;
             
             //serial
+            DEBUG_PARAM("serial:", m_serial);
             memcpy(buf+offset, m_serial.toLatin1().data(), m_serial.length());//序列号
             offset += m_serial.length();
             memcpy(buf+offset, sep.toLatin1().data(), 1);
             offset += 1;
             
             //sk
+            DEBUG_PARAM("sk:", sk);
             if(!sk.isEmpty())
             {
                 memcpy(buf+offset, sk.toLatin1().data(), sk.length());
@@ -1827,25 +2126,22 @@ void FortuneThread::tag_packNew(uint8_t cmd, uint8_t tag, uint16_t tlvLen)
             offset += 1;
 
             //power
-            /*
             uint8_t power_pos = 0;
+            DEBUG_PARAM2("m_power:", m_power, "power_pos:", power_pos);
             if(m_power == "12")
             {
-                DEBUG_PARAM("power_pos:", power_pos);
                 power_pos = 1;
                 memcpy(buf+offset, &power_pos, 1);
             }
             else if(m_power == "24")
             {
-                DEBUG_PARAM("power_pos:", power_pos);
                 power_pos = 2;
                 memcpy(buf+offset, &power_pos, 1);
             }
-            offset += 1;*/
-            memcpy(buf+offset, sep.toLatin1().data(), 1);
             offset += 1;
             
             //rootkey
+            DEBUG_PARAM("rootkey:", mainwindow->m_rootKey);
             if(!mainwindow->m_rootKey.isEmpty())
             {
                 memcpy(buf+offset, mainwindow->m_rootKey.toLatin1().data(), mainwindow->m_rootKey.length());
@@ -1953,46 +2249,6 @@ void FortuneThread::sendMsg(uint16_t msgBodyLen, uint8_t cmd, uint8_t tag, uint1
     }
 }
 
-FortuneThread::FortuneThread(): QQuickImageProvider(QQuickImageProvider::Pixmap)
-{
-    db_init_flag = false;
-    m_serial = "";
-    tBoxSN1= "";
-    tBoxSN2 = "";
-    tBoxSN3= "";
-    phone_number="";
-    stop = false;
-    read = false;
-    write_flag =true;
-    change_sn = false;
-    sos_flag = true;
-    btName="";
-    bt_flag = false;
-    m_bt_flag = false;
-    m_checkItem = "";
-    hwIMEI = "";
-    lock_flag = true;
-    unlock_flag = true;
-    m_vpn = "";
-    m_bA5 = false;
-    m_bTB = false;
-    m_power = "";
-}
-
-FortuneThread::~FortuneThread()
-{
-    mutex.lock();
-    quit = true;
-    cond.wakeOne();
-    mutex.unlock();
-    wait();
-}
-
-void FortuneThread::thread_eixt()
-{
-    this->exit(0);
-}
-
 void MainWindow::onbroadTest(int value)
 {
     DEBUG_CHAR("onbroadTest is running!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -2030,210 +2286,6 @@ void MainWindow::onbroadTest(int value)
 void FortuneThread::stop_flag()
 {
     stop = true;
-}
-
-void FortuneThread::initListView()
-{
-    DEBUGLOG;
-    if(access("/run/media/usb/1.ini", 0) == 0 )
-    {
-        DEBUG_CHAR("1.ini file exist!!!");
-        setting = new QSettings(QString::fromStdString("/run/media/usb/1.ini"), QSettings::IniFormat);
-        setting->setIniCodec("UTF-8");
-        QString checkItem = setting->value("CfgItem/value").toString();
-        DEBUG_PARAM("checkItem:", checkItem);
-        bool ok;
-        m_checkItem = QString("%1").arg(checkItem.toInt(&ok, 16)&0xFFFFFF, 4*checkItem.length(), 2, QLatin1Char('0'));
-        DEBUG_PARAM("checkItem:", m_checkItem);
-        
-        m_vpn = setting->value("VPN/value").toString();
-        QString vpn = QString("%1").arg(m_vpn.toInt(&ok, 16)&0xFFFFFF, 4*checkItem.length(), 2, QLatin1Char('0'));
-        if(m_vpn.left(2) == "00")
-        {
-            vpn.prepend("0000");
-        }
-        DEBUG_PARAM2("vpn:", m_vpn, "vpn:", vpn);
-        for(int i=0; i<8; ++i)
-        {
-            if(vpn.at(16+i).digitValue() == 1 && vpn.at(i).digitValue() == 0)
-            {
-                m_bA5 = true;
-            }
-            else if(vpn.at(16+i).digitValue() == 1 && vpn.at(i).digitValue() == 1)
-            {
-                m_bTB = true;
-            }
-        }
-        DEBUG_PARAM2("A5 ivi:", m_bA5, "TBOX ivi:", m_bTB);
-    }
-    
-//    QString str[] = {"[1] 配置", "[2] CAN通讯", "[3] 网络连接",
-//                     "[4] 主电电源测试", "[5]BLE通信检测", "[6]NFC",
-//                     "[7]BLE连接检测", "[8]常闭测试", "[9]常开测试",
-//                     "[10]动力开关检测", "[11]寻车检测", "[12] GPS天线检测",
-//                     "[13] GPS信号", "[14] ACC OFF", "", ""};
-//    QString str[] = {"[1] 配置", "[2] CAN通讯", "[3] 6轴传感器",  "[4] WIFI",
-//                       "[5] 网络连接", "[6] SOS", "[7] GPS天线检测", "[8] GPS信号", 
-//                     "[9] 主电电源测试", "[10] ACC OFF", "", ""};
-    
-    FileListItem item;
-    QString str[] = {"[01] 配置", "CAN通讯", "CAN唤醒", "6轴传感器", "WIFI", "网络连接(A5)",
-                     "网络连接(TBOX)", "EMMC", "充电检测", "SOS", "GPS天线检测", "GPS信号", 
-                     "主电电源测试", "BLE通信检测", "BLE连接检测", "NFC", "常闭测试", "常开测试", 
-                     "动力开关检测", "寻车检测", "ACC OFF", "", ""};
-    item = FileListItem(str[0], "未测试", 0 );
-    listModel->addFileListItem(item);
-    int index = 1;
-    QString strIndex;
-    for(int i=1; i<(COUNT_CHECK-2); i++) 
-    {
-        if(i<=m_checkItem.size() && m_checkItem.at(i-1).digitValue() == 1)
-        {
-            if(i == 5 && !m_bA5)
-            {
-                DEBUGLOG;
-                continue;
-            }
-            if(i == 6 && !m_bTB)
-            {
-                DEBUGLOG;
-                continue;
-            }
-            if((index+1) < 10)
-            {
-                strIndex = QString("0%1").arg(index+1);
-            }
-            else
-            {
-                strIndex = QString("%1").arg(index+1);
-            }
-            item = FileListItem(QString("[%1] %2").arg(strIndex).arg(str[i]), "未测试", index);
-            listModel->addFileListItem(item);
-            index++;
-        }
-    }
-    item = FileListItem(str[COUNT_CHECK-2], "未测试", index );
-    listModel->addFileListItem(item);
-    index++;
-    item = FileListItem(str[COUNT_CHECK-1], "未测试", index );
-    listModel->addFileListItem(item);
-    for(int i=0;i<listModel->rowCount(); ++i)
-    {
-        DEBUG_PARAM2("index:", i, "listmodel:", listModel->getFilePathByIndex(i));
-    }
-}
-
-void FortuneThread::init()
-{
-    DEBUGLOG;
-    sleep(20);
-    system("dhclient usb0");
-    FILE* ptr;
-    QString str_usb0;
-    char check_usb0[254];
-    int count=0;
-    while(1)
-    {
-        count++;
-        str_usb0.clear();
-        memset(check_usb0, 0, 254);
-        ptr = popen("ifconfig usb0", "r");
-        fread(check_usb0, 1, 254, ptr);
-        str_usb0 = check_usb0;
-//        if(str_usb0.contains("usb0"))
-        DEBUG_PARAM("str_usb0:", str_usb0);
-        if(str_usb0.contains("usb0") && str_usb0.contains("192.168.100"))
-        {
-            DEBUGLOG;
-            break;
-        }
-        else
-        {
-            system("dhclient usb0");
-        }
-        if(count==10)
-        {
-            DEBUG_PARAM("count", count);
-            stop = true;
-//            emit device_disconnect();
-            break;
-        }
-        sleep(1);
-        DEBUGLOG;
-    }
-    pclose(ptr);
-
-    DEBUGLOG;
-//    QString str[] = {"need_set_mode", "qrcode", "send_set_file", "can_comm", "ivi",
-//                     "major_power", "btcom","nfc", "btCon", "lock",
-//                     "unlock", "outage", "lamp", "gps_open", "gps_signal",
-//                     "acc_off"};
-    QString str[] = {"need_set_mode", "qrcode", "send_set_file", "can_comm", "can_awake",
-                     "6axis_sensor", "wifi",  "ivi", "iviT", "emmc", "charge", "air_bag",
-                     "gps_open", "gps_signal", "major_power", "btcom", "btCon", "nfc",
-                     "lock", "unlock", "outage", "lamp", "acc_off"};
-    m_vsTestName.clear();
-    for(int i=0; i<3; ++i)
-    {
-        m_vsTestName.append(str[i]);
-    }
-    for(int i=3; i<COUNT_CHECK; i++)
-    {
-        if((i-3)<m_checkItem.size() && m_checkItem.at(i-3).digitValue() == 1)
-        {
-            if(i == 7 && !m_bA5)
-            {
-                continue;
-            }
-            if(i == 8 && !m_bTB)
-            {
-                continue;
-            }
-            m_vsTestName.append(str[i]);
-        }
-    }
-    for(int i=0; i<m_vsTestName.count(); ++i)
-    {
-        DEBUG_PARAM2("index:", i, "testname:", m_vsTestName.at(i));
-    }
-    
-    DEBUGLOG;
-    int connect_num=0;
-    bool socket_connect = false;
-    socket_m = new QTcpSocket;
-    connect(socket_m, SIGNAL(readyRead()), this, SLOT(read_data()));
-    do{
-        if( !socket_m->waitForConnected(1000)) 
-        {
-            socket_m->connectToHost("192.168.100.1", 20001);
-            if( socket_m->waitForConnected())
-            {
-                DEBUG_CHAR("socket connected");
-                emit show_main_page();
-                socket_connect = true;
-            }
-            else
-            {
-                socket_m->disconnectFromHost();
-            }
-        }
-        sleep(2);
-        connect_num++;
-        DEBUG_PARAM("connect_num:",connect_num);
-        if(connect_num>90)
-        {
-            DEBUGLOG;
-            stop = true;
-            emit device_disconnect();
-            break;
-        }
-    }while( !socket_connect );
-    DEBUGLOG;
-    if(remove_flag)
-    {
-      DEBUGLOG;
-      stop = true;
-    }
 }
 
 void FortuneThread::getInfo(QString hostName, quint16 port)
@@ -2453,9 +2505,16 @@ void FortuneThread::run()
             }*/
             else if(testname == "acc_off" )
             {
-                DEBUG_CHAR("sending Acc off...");
-                set_gpio_val(101, true, 0 );
-                sendMsg(2, 0x02,  0x10,  0);
+                if(true)
+                {
+                    DEBUG_CHAR("sending Acc off...");
+                    set_gpio_val(101, true, 0 );
+                    sendMsg(2, 0x02,  0x10,  0);
+                }
+                else
+                {
+                    read = true;
+                }
             }
             else if(testname == "btcom")
             {
@@ -2511,16 +2570,6 @@ void FortuneThread::run()
             {
                 if(true)
                 {
-                    /*if(mainwindow->m_bSIM)
-                    {
-                        DEBUG_CHAR("receiving cfg mode data...");
-                        handle_cfg_mode();
-                    }
-                    else
-                    {
-                        DEBUG_CHAR("receiving cfg mode data...");
-                        handle_cfg_modeIMEI();
-                    }*/
                     DEBUG_CHAR("receiving cfg mode data...");
                     handle_cfg_modeNew();
                 }
@@ -2605,7 +2654,10 @@ void FortuneThread::run()
             {
                 DEBUG_CHAR("receiving acc off data...");
                 stop_monitorusb=true;
-                handleACCOFF();
+                if(true)
+                {
+                    handleACCOFF();
+                }
             }
             else if(testname == "btcom")
             {
@@ -2689,6 +2741,11 @@ void FortuneThread::handleBtCom()
     {
         DEBUGLOG;
         //emit nextOne();
+    }
+    else if(tagbody == 0)
+    {
+        stop = true;
+        emit errorCode("蓝牙通信,返回值为0", 262);
     }
     else
     {
@@ -2782,6 +2839,11 @@ void FortuneThread::handleNFC()
         DEBUGLOG;
         //emit nextOne();
     }
+    else if(tagbody == 0)
+    {
+        stop = true;
+        emit errorCode("NFC,返回值为0", 261);
+    }
     else
     {
         stop = true;
@@ -2853,9 +2915,13 @@ void FortuneThread::handleLockCar()
         DEBUGLOG;
         //emit nextOne();
     }
+    else if(tagbody == 0)
+    {
+        stop = true;
+        emit errorCode("锁车,返回值为0", 230);
+    }
     else
     {
-        DEBUGLOG;
         stop = true;
         emit errorCode("锁车", 230);
     }
@@ -2880,6 +2946,11 @@ void FortuneThread::handleUnlockCar()
     {
         DEBUGLOG;
         //emit nextOne();
+    }
+    else if(tagbody == 0)
+    {
+        stop = true;
+        emit errorCode("解锁,返回值为0", 220);
     }
     else
     {
@@ -2912,6 +2983,11 @@ void FortuneThread::handleCarDoor()
    {
        DEBUGLOG;
        //emit nextOne();
+   }
+   else if(tagbody == 0)
+   {
+       stop = true;
+       emit errorCode("动力断电,返回值为0", 250);
    }
    else
    {
@@ -2954,6 +3030,11 @@ void FortuneThread::handleCarLamp()
    {
        DEBUGLOG;
        //emit nextOne();
+   }
+   else if(tagbody == 0)
+   {
+       stop = true;
+       emit errorCode("车灯,返回值为0", 240);
    }
    else
    {
@@ -3013,6 +3094,48 @@ void FortuneThread::change_serial()
     sync();
 }
 
+void FortuneThread::change_serialCY()
+{
+    char buf[16]={0};//测试完成后更新ini文件
+    QString str_sn3;
+    str_sn3 = tBoxSN3.mid(7);
+    DEBUG_PARAM("str_sn3:", str_sn3);
+    int pos = atol(str_sn3.toLatin1().data());
+    DEBUG_PARAM("pos:", pos);
+    if(pos<9999)
+    {
+       pos++;
+    }
+    if(pos<10)
+    {
+        sprintf(buf, "000%d", pos);
+    }
+    else if((pos>=10) && (pos<100))
+    {
+        sprintf(buf, "00%d", pos);
+    }
+    else if((pos>=100) && (pos<1000))
+    {
+        sprintf(buf, "0%d", pos);
+    }
+    else if((pos>=1000) && (pos<10000))
+    {
+        sprintf(buf, "%d", pos);
+    }
+    DEBUG_PARAM("buf:", buf);
+    QString str = buf;
+    QString str_retain=tBoxSN3.mid(0, 7);
+    DEBUG_PARAM("str_retain:", str_retain);
+    str.prepend(str_retain);
+    DEBUG_PARAM("str:", str);
+    setting->setValue("TBoxSN3/sn3", str);
+}
+
+void FortuneThread::thread_eixt()
+{
+    this->exit(0);
+}
+
 ////////////////////////////MainWindow///////////////////////////
 MainWindow::MainWindow() 
 {
@@ -3025,6 +3148,9 @@ MainWindow::MainWindow()
     m_sProName = "";
     m_dbName = "";
     m_msiDBTerm.clear();
+    m_sSIMnumber = "";
+    m_bOpenDB = true;
+    m_sSerialShow = "";
     thread_m = new FortuneThread;
     //init_db();
     connect(thread_m, SIGNAL(update_iccid()), this, SLOT(on_update_iccid()), Qt::QueuedConnection );
@@ -3083,7 +3209,6 @@ void MainWindow::init()
     thread_m->iniTableViewByCarinfo();
     thread_m->iniTableViewByqr();
     thread_m->initListView();
-    //thread_m->readDisk();
 }
 
 void MainWindow::init_db()
@@ -3148,11 +3273,9 @@ void MainWindow::onConnectServer()
 {
     m_pConnectServerTime->stop();
     DEBUGLOG;
-    thread_m->init();
-    DEBUGLOG;
-    mon1->start();
     thread_m->readDisk();
-    DEBUGLOG;
+    thread_m->init();
+    mon1->start();
     if(!thread_m->isRunning()) { thread_m->start(); }
 }
 /*
@@ -3331,9 +3454,9 @@ void MainWindow::initDatabase(QString filePath)
     char *pErrMsg;
     char *sql = NULL;
 
-    if(open_db_flag)
+    if(m_bOpenDB)
     {
-        open_db_flag = false;
+        m_bOpenDB = false;
         if((ret = sqlite3_open(m_dbName.data(), &m_pdb)) != SQLITE_OK)
         {
             fprintf(stderr,"Can't open databaseOne: %s\n", sqlite3_errmsg(m_pdb));
@@ -3474,40 +3597,41 @@ void MainWindow::on_update_iccid()
         emit thread_m->errorCode("rootKey", 180);
     }
     thread_m->tableModel->setFileNamebyFilePath("ICCID", str_iccid);  
-    sim_num = getData(str_iccid, "sim");
-    if(sim_num=="")
+    m_sSIMnumber = getData(str_iccid, "sim");
+    if(m_sSIMnumber=="")
     {
         emit thread_m->errorCode("SIM", 3);
     }
     else
     {
-        thread_m->tableModel->setFileNamebyFilePath("SIM", sim_num);
+        thread_m->tableModel->setFileNamebyFilePath("SIM", m_sSIMnumber);
     }
 
-    serial_show = getData(str_iccid, "SN");//序列号不等空
-    DEBUG_PARAM("serial_show:", serial_show);
-    if(serial_show == "")//sn from udisk
+    m_sSerialShow = getData(str_iccid, "SN");//序列号不等空
+    DEBUG_PARAM("serial_show:", m_sSerialShow);
+    QString tBoxSN3 = "0000";
+    if(m_sSerialShow == "")//sn from udisk
     {
         thread_m->change_sn = true;
         char buf[35]={0};
         memset(buf, 0, 35);
-        sprintf( buf, "%s%s%s", thread_m->tBoxSN1.toLocal8Bit().data(), thread_m->tBoxSN2.toLocal8Bit().data(), tBoxSN3.toLocal8Bit().data() );
+        sprintf(buf, "%s%s%s", thread_m->tBoxSN1.toLocal8Bit().data(), thread_m->tBoxSN2.toLocal8Bit().data(), tBoxSN3.toLocal8Bit().data());
         thread_m->m_serial = buf;
         memset(buf, 0, 35);
-        sprintf( buf, "%s%s", thread_m->tBoxSN1.toLocal8Bit().data(), thread_m->tBoxSN2.toLocal8Bit().data());
-        serial_show = buf;
-        DEBUG_PARAM("serial_show:",serial_show);
+        sprintf(buf, "%s%s", thread_m->tBoxSN1.toLocal8Bit().data(), thread_m->tBoxSN2.toLocal8Bit().data());
+        m_sSerialShow = buf;
+        DEBUG_PARAM("serial_show:", m_sSerialShow);
         thread_m->change_serial();
-        updateOtherByIccid(str_iccid, "SN", serial_show);//sn
+        updateOtherByIccid(str_iccid, "SN", m_sSerialShow);//sn
     }
     else
     {
-        thread_m->m_serial = serial_show;
-        thread_m->m_serial.append("0000");
+        thread_m->m_serial = m_sSerialShow;
+        thread_m->m_serial.append(tBoxSN3);
     }
-    DEBUG_PARAM("serial_show:", serial_show);
-    thread_m->tableMode2->setFileNamebyFilePath("序列号", serial_show);
-    updateOtherByIccid(str_iccid, "product", pn_num);
+    DEBUG_PARAM("serial_show:", m_sSerialShow);
+    thread_m->tableMode2->setFileNamebyFilePath("序列号", m_sSerialShow);
+    updateOtherByIccid(str_iccid, "product", thread_m->m_sProductNumber);
     updateOtherByIccid(str_iccid, "swversion", software_version);
     updateOtherByIccid(str_iccid, "hwversion", thread_m->hw);
     sync();
@@ -3622,16 +3746,14 @@ void MainWindow::updateOtherByIccid(QString iccid, QString model,QString data)
 
 QString MainWindow::getData(QString iccid,QString data)
 {
-    DEBUG_PARAM("iccid:", iccid);
-    DEBUG_PARAM("iccid::", iccid.length());
-    DEBUG_PARAM("data:", data);
+    DEBUG_PARAM2("iccid:", iccid, "data:", data);
     
     int ret;
     sqlite3_stmt *stmt;
 
-    if(open_db_flag)
+    if(m_bOpenDB)
     {
-        open_db_flag = false;
+        m_bOpenDB = false;
         if((ret = sqlite3_open(m_dbName.data(),&m_pdb)) != SQLITE_OK)
         {
             fprintf(stderr,"Can't open databaseOne: %s\n", sqlite3_errmsg(m_pdb));
@@ -3670,8 +3792,7 @@ QString MainWindow::getData(QString iccid,QString data)
 /*********************************************************/
 void MainWindow::on_update_sn()
 {
-    //序列号
-    thread_m->m_serial = getData(thread_m->m_imei, "SN");//序列号不等空
+    thread_m->m_serial = getDataByIMEI(thread_m->m_imei, "SN");//序列号不等空
     DEBUG_PARAM("m_serial:", thread_m->m_serial);
     if(thread_m->m_serial == "")//sn from udisk
     {
@@ -3680,7 +3801,14 @@ void MainWindow::on_update_sn()
         char buf[35]={0};
         sprintf( buf, "%s%s%s", thread_m->tBoxSN1.toLocal8Bit().data(), thread_m->tBoxSN2.toLocal8Bit().data(), thread_m->tBoxSN3.toLocal8Bit().data() );
         thread_m->m_serial = buf;
-        thread_m->change_serial();
+        if(thread_m->tBoxSN2.length() == 2)
+        {
+            thread_m->change_serialCY();
+        }
+        else
+        {
+            thread_m->change_serial();
+        }
         updateOtherByImei(thread_m->m_imei, "SN", thread_m->m_serial);//sn
     }
     else
@@ -3690,9 +3818,10 @@ void MainWindow::on_update_sn()
         DEBUG_PARAM("btName:", thread_m->btName);
     }
     DEBUG_PARAM("thread_m->m_serial:", thread_m->m_serial);
-    serial_show = thread_m->m_serial;
+    m_sSerialShow = thread_m->m_serial;
     thread_m->tableMode2->setFileNamebyFilePath("序列号", thread_m->m_serial);
-    updateOtherByImei(thread_m->m_imei, "product", p_model);
+    updateOtherByImei(thread_m->m_imei, "iccid", str_iccid);
+    updateOtherByImei(thread_m->m_imei, "product", thread_m->m_sProductModel);
     updateOtherByImei(thread_m->m_imei, "swversion", software_version);
     updateOtherByImei(thread_m->m_imei, "hwversion", thread_m->hw);
     sync();
@@ -3770,8 +3899,7 @@ void MainWindow::insertData(QString imei, QString sn, QString swversion, QString
 */
 void MainWindow::updateOtherByImei(QString imei, QString model,QString data)
 {
-    DEBUG_PARAM("imei", imei);
-    DEBUG_PARAM("term", model);
+    DEBUG_PARAM2("imei", imei, "term", model);
     
     int ret;
     sqlite3_stmt *stmt;
@@ -3782,7 +3910,6 @@ void MainWindow::updateOtherByImei(QString imei, QString model,QString data)
                                 imei.toLocal8Bit().data());
     printf("%s\n", sql);
 
-    DEBUG_PARAM("open_db_flag:", open_db_flag);
     if((ret = sqlite3_prepare(m_pdb, sql, strlen(sql), &stmt, 0)) != SQLITE_OK)
     {
         fprintf(stderr, "updateOtherByImei error: %s\n", sqlite3_errmsg(m_pdb));
@@ -3798,15 +3925,14 @@ void MainWindow::updateOtherByImei(QString imei, QString model,QString data)
 
 QString MainWindow::getDataByIMEI(QString imei,QString data)
 {
-    DEBUG_PARAM("imei:", imei);
-    DEBUG_PARAM("data:", data);
+    DEBUG_PARAM2("imei:", imei, "data:", data);
     
     int ret;
     sqlite3_stmt *stmt;
-    DEBUG_PARAM("open_db_flag:", open_db_flag);
-    if(open_db_flag)
+    DEBUG_PARAM("open_db_flag:", m_bOpenDB);
+    if(m_bOpenDB)
     {
-        open_db_flag = false;
+        m_bOpenDB = false;
         if((ret = sqlite3_open(m_dbName.data(),&m_pdb)) != SQLITE_OK)
         {
             fprintf(stderr,"Can't open databaseOne: %s\n", sqlite3_errmsg(m_pdb));
@@ -3849,9 +3975,9 @@ bool MainWindow::findData(const QString iccid, const QString imei)
     int ret;
     sqlite3_stmt *stmt;
 
-    if(open_db_flag)
+    if(m_bOpenDB)
     {
-        open_db_flag = false;
+        m_bOpenDB = false;
         if((ret = sqlite3_open(m_dbName.data(),&m_pdb)) != SQLITE_OK)
         {
             DEBUG_PARAM("ret:", ret);

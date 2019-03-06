@@ -1,11 +1,8 @@
 [CfgItem]
-value=8C79F
+value=0D701
 
 [DBTerm]
 value=FFF
-
-[ACC]
-value=5000
 
 [NAME]
 pname=车载远程通信终端总成
@@ -16,32 +13,29 @@ pn=89221-THA10
 [Phone]
 number=14737226487
 
-[ProModel]
-pmodel=产品类型
-
 [ProjectName]
-value=GV1351
+value=CJ1351
 
 [QRcode]
-value=0080
+value=F180
 
 [SIMCheckCfg]
 value=0
 
 [SK]
-sk=
+sk=123456
 
 [TBoxSN1]
 sn1=TBOXTY190219A
 
 [TBoxSN2]
-sn2=0136
+sn2=0141
 
 [TBoxSN3]
 sn3=
 
 [VPN]
-value=808080
+value=008080
 
 [Version]
 pversion=89221-THA10

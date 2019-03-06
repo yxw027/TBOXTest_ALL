@@ -175,7 +175,7 @@ public:
     explicit FortuneThread();
     ~FortuneThread();
     void readDisk();
-    void readDiskIMEI();
+    //void readDiskIMEI();
     void getInfo(QString hostName, quint16 port);
     void run() Q_DECL_OVERRIDE;
     Q_INVOKABLE void handleSetFile();
@@ -201,6 +201,7 @@ public:
     Q_INVOKABLE void stop_flag();
     Q_INVOKABLE void thread_eixt();
     Q_INVOKABLE void change_serial();
+    Q_INVOKABLE void change_serialCY();
     void handleBt(bool state);
     int checkGPIO(int port, bool flag);
     void handleLockCar();
@@ -211,11 +212,11 @@ public:
     bool detect_dark_current();
     bool detect_dark_current_read();
     bool set_gpio_val( int num, bool dir,int value );
-    void handle_cfg_mode();
-    void handle_cfg_modeIMEI();
+    //void handle_cfg_mode();
+    //void handle_cfg_modeIMEI();
     void handle_cfg_modeNew();
-    void tag_pack( uint8_t cmd, uint8_t tag, uint16_t tlvLen);
-    void tag_packIMEI( uint8_t cmd, uint8_t tag, uint16_t tlvLen);
+    //void tag_pack( uint8_t cmd, uint8_t tag, uint16_t tlvLen);
+    //void tag_packIMEI( uint8_t cmd, uint8_t tag, uint16_t tlvLen);
     void tag_packNew( uint8_t cmd, uint8_t tag, uint16_t tlvLen );
     void handleqrCode();
     void handleqrCodeIMEI();
@@ -300,13 +301,15 @@ public:
     bool sos_flag;
     bool lock_flag;
     bool unlock_flag;
+    bool bt_flag;
     QString m_power;
     QString btName;
-    bool bt_flag;
     
     QString m_imei;
     char imei[24]={0};
     QString hwIMEI;
+    QString m_sProductModel;
+    QString m_sProductNumber;
 
 private:
     QByteArray qrcodeStr = " ";
@@ -320,15 +323,17 @@ private:
     QString vehicle;
     QString sk;
     QString m_vpn;
+    int m_acc;
     bool m_bA5;
     bool m_bTB;
     bool analyze_section_data();
     QVector<QString> m_vsTestName;
     QString m_checkItem;
     QMap<QString, int> m_msiQRitem;
+    QString m_sProductName;
 };
 
-class MainWindow:public QQuickView
+class MainWindow : public QQuickView
 {
     Q_OBJECT
     //Q_PROPERTY
@@ -395,6 +400,8 @@ public:
     bool m_bRootkey;
     QString m_sQRitem;
     QString m_sProName;
+    QString m_sSIMnumber;
+    QString m_sSerialShow;
     
 private:
     int m_hotplug_sd;
@@ -403,6 +410,7 @@ private:
     QString m_sDBTerm;
     QByteArray m_dbName;
     QMap<QString, int> m_msiDBTerm;
+    bool m_bOpenDB;
 };
 
 extern MainWindow* mainwindow;

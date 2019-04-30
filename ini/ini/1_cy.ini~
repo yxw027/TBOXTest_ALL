@@ -1,0 +1,16 @@
+[NAME]
+pname=产品名称
+[Phone]
+number=14737226487
+[SK]
+sk=123456
+[TBoxSN1]
+sn1=TIOTTBOX
+[TBoxSN2]
+sn2=01
+[TBoxSN3]
+sn3=1234695
+[Version]
+pversion=V1.0
+[ProModel]
+pmodel=产品类型

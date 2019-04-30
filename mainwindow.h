@@ -237,6 +237,7 @@ signals:
     void qrcode();
     void gpsBarData(QVariant num, QVariant strengthNum);
     void gps_start_num(QString num);
+    void gps_start_time(QString time);
     void nextOne();
     void time_start(QString testname);
     void time_stop();
@@ -336,7 +337,6 @@ private:
 class MainWindow : public QQuickView
 {
     Q_OBJECT
-    //Q_PROPERTY
 public:
     explicit MainWindow();
     ~MainWindow();
@@ -359,10 +359,6 @@ public:
     void updateOtherByImei(QString imei, QString model,QString data);
     QString getDataByIMEI(QString imei,QString data);
     bool findData(const QString iccid, const QString imei);
-    
-private:
-    //bool checkTermExist(const QString term);
-    //void getDBTerm();
 
 signals:
     void start_thread();
@@ -411,6 +407,7 @@ private:
     QByteArray m_dbName;
     QMap<QString, int> m_msiDBTerm;
     bool m_bOpenDB;
+    int m_iCanCfg; //0 标准帧，500k, 1 标准帧 250k, 2 扩展帧 500k, 3 扩展帧 250k
 };
 
 extern MainWindow* mainwindow;

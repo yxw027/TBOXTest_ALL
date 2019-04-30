@@ -62,12 +62,12 @@ HEADERS += \
     bt_interface.h
 
 
-unix:!macx: LIBS += -L$$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -lsqlite3
+unix:!macx: LIBS += -L$$PWD/../../../../../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -lsqlite3
 
-unix:!macx: LIBS += -L$$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -ludev
+unix:!macx: LIBS += -L$$PWD/../../../../../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -ludev
 
-INCLUDEPATH += $$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
-DEPENDPATH += $$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
+INCLUDEPATH += $$PWD/../../../../../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
+DEPENDPATH += $$PWD/../../../../../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
 
 
 

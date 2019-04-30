@@ -12,6 +12,7 @@ Item {
     property real barWidth: 15;
     property real barInteral: spacing+barWidth;
     property real barCount: 13
+    
     function resetBarArea(){
         if(barObject.length <= 0)
             return;
@@ -20,6 +21,7 @@ Item {
         }
         barObject.length = 0;
     }
+    
     function createBarArea(){
         var object;
         for(var i = 0; i < barCount; i++){
@@ -35,6 +37,7 @@ Item {
             barObject.push(object);
         }
     }
+    
     Image {
         id: gps_false_signal
         visible: true
@@ -60,21 +63,29 @@ Item {
                 if(barObject[i].barHeight === 0)
                 {
                     barObject[i].barHeight =  strengthNum*2;
-                    if((0<strengthNum) && (strengthNum<=10))
+                    if((0<strengthNum) && (strengthNum<=20))
                     {
                         barObject[i].barColor="red"
                     }
-                    else if((10<strengthNum) && (strengthNum<=15))
+                    else if((20<strengthNum) && (strengthNum<=25))
                     {
-                        barObject[i].barColor="coral"
+                        barObject[i].barColor="magenta"
                     }
-                    else if((15<strengthNum) && (strengthNum<=20))
+                    else if((25<strengthNum) && (strengthNum<=30))
                     {
                         barObject[i].barColor="yellow"
                     }
-                    else if(20<strengthNum)
+                    else if((30<strengthNum) && (strengthNum<=35))
+                    {
+                        barObject[i].barColor="blue"
+                    }
+                    else if((35<strengthNum) && (strengthNum<=40))
                     {
                         barObject[i].barColor="green"
+                    }
+                    else if(40<strengthNum)
+                    {
+                        barObject[i].barColor="darkGreen"
                     }
                     break;
                 }

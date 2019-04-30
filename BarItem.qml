@@ -44,7 +44,7 @@ Rectangle {
         font.bold: true
         color: "white"
         text: qsTr(index)
-         font.family: fontFamily;
+        font.family: fontFamily;
     }
     property string  index: "";
     property string colorTemp: "green";

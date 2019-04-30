@@ -16,6 +16,7 @@ Item {
         anchors.leftMargin: 678
         source: "./image/mainPage/GPSFrame.png"
     }
+    
     Image {
         id: gpsBg_1
         width: 289
@@ -26,12 +27,14 @@ Item {
         anchors.leftMargin: 696
         source: "./image/mainPage/GPS_bg.png"
     }
+    
     Image {
         id: gpsBg_2
         anchors.top: gpsBg_1.bottom
         anchors.left: gpsBg_1.left
         source: "./image/mainPage/GPS_num.png"
     }
+    
     Item {
         id: other_signal_section
         anchors.left: parent.left
@@ -137,6 +140,7 @@ Item {
             source: "./image/gps_sig/wifi_n.png"
         }
     }
+    
     Connections{
         target: Thread
         onShow_wifi:
@@ -170,6 +174,7 @@ Item {
         text: text_num
         font.family: fontFamily;
     }
+    
     Connections{
         target: Thread
         onGps_start_num:

@@ -3,10 +3,12 @@
 #include <qiterator.h>
 
 #define COUNT_CHECK 23
+#define TJ "GV1350"
+#define CJ "GV1351"
+#define CY "GG1660"
 
 bool stop_monitorusb = false;
 char str_iccid[21]={0};
-QString str_imei="";
 QString str_imsi="";
 bool remove_flag = false;
 char software_version[15]={0};
@@ -481,7 +483,7 @@ void FortuneThread::initListView()
 void FortuneThread::init()
 {
     DEBUGLOG;
-    sleep(20);
+    sleep(50);
     system("dhclient usb0");
     FILE* ptr;
     QString str_usb0;
@@ -830,23 +832,23 @@ void FortuneThread::handle_cfg_modeIMEI()
     DEBUG_PARAM("sysLen:", sysLen);
     DEBUG_PARAM("sys version:", sys_buf);
     
-    uint8_t sysLen=0;//system version
-    char sys_buf[16]={0};
-    memcpy(&sysLen, readMsg+offset, 1);
-    offset = offset+1;
-    memcpy(sys_buf, readMsg+offset, sysLen);
-    offset = offset+sysLen;
-    DEBUG_PARAM2("sysLen:", sysLen, "sys version:", sys_buf);
-    emit sysVersion(sys_buf);
+//    uint8_t sysLen=0;//system version
+//    char sys_buf[16]={0};
+//    memcpy(&sysLen, readMsg+offset, 1);
+//    offset = offset+1;
+//    memcpy(sys_buf, readMsg+offset, sysLen);
+//    offset = offset+sysLen;
+//    DEBUG_PARAM2("sysLen:", sysLen, "sys version:", sys_buf);
+//    emit sysVersion(sys_buf);
 
-    uint8_t osLen=0;//os version
-    char os_buf[16]={0};
-    memcpy(&osLen, readMsg+offset, 1);
-    offset = offset+1;
-    memcpy(os_buf, readMsg+offset, osLen);
-    offset = offset+osLen;
-    DEBUG_PARAM2("osLen:", osLen, "os version:", os_buf);
-    emit osVersion(os_buf);
+//    uint8_t osLen=0;//os version
+//    char os_buf[16]={0};
+//    memcpy(&osLen, readMsg+offset, 1);
+//    offset = offset+1;
+//    memcpy(os_buf, readMsg+offset, osLen);
+//    offset = offset+osLen;
+//    DEBUG_PARAM2("osLen:", osLen, "os version:", os_buf);
+//    emit osVersion(os_buf);
 
     if( head==0xAA55 && cmd==0x01 && msgbody2==0x00 )
     {
@@ -876,6 +878,11 @@ void FortuneThread::handle_cfg_modeNew()
     cmd = *(uint8_t*)(readMsg+4);
     msgbody1 = *(uint8_t*)(readMsg+5);
     msgbody2 = *(uint8_t*)(readMsg+6);
+    
+//    for(int i=0;i<sizeof(readMsg)/sizeof(readMsg[0]);i++)
+//    {
+//        printf("##%02x \n",readMsg[i]);
+//    }
     
     //4G signal strength
     memcpy(&sig_strength, readMsg+7, 1);
@@ -938,8 +945,8 @@ void FortuneThread::handle_cfg_modeNew()
             {
                m_imei = imei;
                mainwindow->insertData("", m_imei);
+               sync();
             }
-            sync();
         }
     }
     
@@ -961,6 +968,7 @@ void FortuneThread::handle_cfg_modeNew()
     }
     DEBUG_PARAM("4g software version:", software_version);
     tableMode2->setFileNamebyFilePath("软件版本号", software_version);
+    emit appVersion(software_version);
     tmpIndex1 = ++tmpIndex;
     
     //4G版本号(内部查看)
@@ -977,7 +985,7 @@ void FortuneThread::handle_cfg_modeNew()
     }
     memcpy(buf, readMsg+tmpIndex1, tmpIndex-tmpIndex1);
     DEBUG_PARAM("4g version:", buf);
-    emit appVersion(buf);
+    emit sysVersion(buf);
     tmpIndex1 = ++tmpIndex;
     
     //4G系统版本号(boot)
@@ -1137,11 +1145,6 @@ void FortuneThread::handleqrCode()
             buf[i] = *(readMsg+offset+i);
         }
         offset = offset + 15;
-        str_imei = buf;
-        if(str_imei=="")
-        {
-            emit errorCode("IMEI", 4);
-        }
         content = QString::fromLocal8Bit(buf);
         DEBUG_PARAM("IMEI:", content);
         tableMode2->setFileNamebyFilePath("IMEI", content);
@@ -1153,8 +1156,6 @@ void FortuneThread::handleqrCode()
             qrcodeStr.append("\n");
         }
         content.clear();
-        mainwindow->updateOtherByIccid(str_iccid, "IMEI", str_imei);
-        sync();
         
         //IMSI
         memset(buf, 0, 35);
@@ -1179,7 +1180,14 @@ void FortuneThread::handleqrCode()
             qrcodeStr.append("\n");
         }
         content.clear();
-        mainwindow->updateOtherByIccid(str_iccid, "IMSI", str_imsi);
+        if(mainwindow->m_bSIM)
+        {
+            mainwindow->updateOtherByIccid(str_iccid, "IMSI", str_imsi);
+        }
+        else
+        {
+            mainwindow->updateOtherByImei(m_imei, "IMSI", str_imsi);
+        }
         sync();
         
         //序列号
@@ -1630,10 +1638,10 @@ void FortuneThread::handleIVI()
     memset(buf, 0 , 1024);
     DEBUGLOG;
     FILE* fl ;
-    int count=1;
+    int count=3;
     while(count--)
     {
-        fl = popen("ping -w 6 www.baidu.com -c 3", "r");//ping www.baidu.com -c 1
+        fl = popen("ping www.baidu.com -c 3", "r");//ping www.baidu.com -c 1
         memset(buf, 0, 1024);
         fread(buf, 1, sizeof(buf), fl);
         str.append(buf);
@@ -1739,9 +1747,18 @@ void FortuneThread::handleGPSSignal()
     uint16_t taglen;
     uint8_t number;
     uint8_t strength;
+    uint16_t startTime = 0;
+    for(int i=0;i<sizeof(readMsg)/sizeof(readMsg[0]);i++)
+    {
+        printf("##%02x \n",readMsg[i]);
+    }
     tag = *(uint8_t*)(readMsg+5);//0x6D
     taglen = *(uint16_t*)(readMsg+6);
-    pcs = *(uint8_t*) (readMsg+8);
+    startTime = *(readMsg+8);
+    startTime = ((startTime & 0xff) << 8) | *(readMsg+9);
+    DEBUG_PARAM2("tag:", tag, "startTime:", startTime);
+    emit gps_start_time(QString::number(startTime));
+    pcs = *(uint8_t*) (readMsg+10);
     DEBUG_PARAM2("tag:", tag, "pcs:", pcs);
     if( tag == 0x6D && pcs>0 )
     {
@@ -1749,17 +1766,17 @@ void FortuneThread::handleGPSSignal()
         {
             number = 0;
             strength = 0;
-            number = *(uint8_t*) ( readMsg+9+ 2*i );
-            strength = *(uint8_t*) ( readMsg+10+ 2*i );
-            if(strength>20)
+            number = *(uint8_t*) ( readMsg+11+ 2*i );
+            strength = *(uint8_t*) ( readMsg+12+ 2*i );
+            DEBUG_PARAM("number: %d", number);
+            DEBUG_PARAM("strength: %d", strength);
+            if(strength>=20)
             {
                 gt30++;
             }
-            qDebug("number=====%d", number);
-            qDebug("strength=====%d", strength);
             emit gpsBarData((int)number, (int)strength);
         }
-        qDebug("gt30=====%d", gt30);
+        DEBUG_PARAM("gt30: %d", gt30);
         QString num;
         char buf[2];
         sprintf(buf, "%d", (pcs++));
@@ -1769,9 +1786,9 @@ void FortuneThread::handleGPSSignal()
     else
     {
         stop = true;
-        emit errorCode("GPS信号", 150);
+        emit errorCode("GPS信号,卫星数为0", 150);
     }
-
+    
     if( gt30>=3 )
     {
         DEBUGLOG;
@@ -1780,7 +1797,7 @@ void FortuneThread::handleGPSSignal()
     else //卫星信号/个数不足
     {
         stop = true;
-        emit errorCode("GPS信号", 150);
+        emit errorCode("GPS信号,有效卫星数少于3", 150);
     }
 }
 
@@ -2251,7 +2268,7 @@ void FortuneThread::sendMsg(uint16_t msgBodyLen, uint8_t cmd, uint8_t tag, uint1
 
 void MainWindow::onbroadTest(int value)
 {
-    DEBUG_CHAR("onbroadTest is running!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    DEBUG_CHAR("onbroadTest is running...");
     for(int i=0; i<4; i++)
     {
         qDebug("can_flag[%d]=%d", i, thread_m->can_flag[i]);
@@ -2318,11 +2335,6 @@ void FortuneThread::read_data()
 void FortuneThread::run()
 {
     DEBUGLOG;
-    if( access("/run/media/usb", 0) != 0 )
-    {
-        DEBUGLOG;
-        emit udisk_disconnect();
-    }
 #ifdef UPDATE
     if(access("/run/media/usb/upgrade", F_OK) == 0)//update file is exit
     {
@@ -2355,12 +2367,13 @@ void FortuneThread::run()
     bool bEnd = false;
     write_flag = true;
     stop = false;
+    bool bTestAirbag = false;
     while(1)
     {
         msleep(500);
         ++timeout;
         
-        if(testname == "gps_open")
+        if(bTestAirbag && testname == "gps_open")
         {
             sosTime++;
             if(sosTime==70)//for sos timeout
@@ -2572,6 +2585,7 @@ void FortuneThread::run()
                 {
                     DEBUG_CHAR("receiving cfg mode data...");
                     handle_cfg_modeNew();
+                    //handle_cfg_modeIMEI();
                 }
             }
             else if(testname == "qrcode" )
@@ -2624,6 +2638,7 @@ void FortuneThread::run()
             {
                 DEBUG_CHAR("receiving air_bag data...");
                 handleAirBag();
+                bTestAirbag = true;
             }
             else if(testname == "gps_open" )
             {
@@ -3151,16 +3166,19 @@ MainWindow::MainWindow()
     m_sSIMnumber = "";
     m_bOpenDB = true;
     m_sSerialShow = "";
+    m_iCanCfg = 0;
+    
     thread_m = new FortuneThread;
-    //init_db();
     connect(thread_m, SIGNAL(update_iccid()), this, SLOT(on_update_iccid()), Qt::QueuedConnection );
     connect(thread_m, SIGNAL(update_sn()), this, SLOT(on_update_sn()), Qt::QueuedConnection );
     rootContext()->setContextProperty("Thread", thread_m);
     connect(thread_m, SIGNAL(nextOne()), thread_m, SLOT(test()));
+    
     m_harkey = new ComTiotDbusHardkeyInterface("com.tiot.dbus.hardkey", "/", QDBusConnection::systemBus(), this);
     m_harkey->wakeUp();
     connect(m_harkey, SIGNAL(sigKeyEvent(int, int)), this, SLOT(test(int, int)));
     rootContext()->setContextProperty("HardKey", m_harkey);
+    
     thread_m->listModel = new FileListItemModel;
     thread_m->tableModel = new FileListItemModel;
     thread_m->tableMode2 = new FileListItemModel;
@@ -3169,14 +3187,17 @@ MainWindow::MainWindow()
     rootContext()->setContextProperty("TestNameModel", thread_m->tableModel);
     rootContext()->setContextProperty("TestNameMode2", thread_m->tableMode2);
     rootContext()->setContextProperty("TableModelQR", thread_m->tableModelQR);
+    
     m_pConnectServerTime = new QTimer;
     connect( m_pConnectServerTime,SIGNAL(timeout()), this, SLOT(onConnectServer()) );
     m_pInitTimer = new QTimer;
     connect(m_pInitTimer, SIGNAL(timeout()), this, SLOT(init()));
+    
     can_dbus_interface = new ComQtYeedonCanInterface("com.qt.yeedon.can", "/", QDBusConnection::systemBus(), this);
     m_pCallInterface = new ComQtYeedonCallInterface("com.qt.yeedon.call", "/", QDBusConnection::systemBus(), this);
-    connect(m_pCallInterface, SIGNAL(broadcastRing()), this, SLOT(onSigBroadcastRing()));
     connect(can_dbus_interface, SIGNAL(broadTest(int)), this, SLOT(onbroadTest(int)));
+    connect(m_pCallInterface, SIGNAL(broadcastRing()), this, SLOT(onSigBroadcastRing()));
+    
     thread_m->m_btInterface = new ComQtYeedonBtInterface("com.qt.yeedon.bt", "/",  QDBusConnection::systemBus(), this);
     connect(thread_m->m_btInterface, SIGNAL(sigBleDevName(QString)), thread_m, SLOT(onSigBleDevName(QString)));
     connect(thread_m->m_btInterface, SIGNAL(sigSwitchStatus(bool)), thread_m, SLOT(onSigSwitchStatus(bool)));
@@ -3237,7 +3258,12 @@ void MainWindow::init_db()
         DEBUG_PARAM("QRcode:", qr);
         m_sQRitem = QString("%1").arg(qr.toInt(&ok, 16)&0xFFFF, 4*qr.length(), 2, QLatin1Char('0'));
         DEBUG_PARAM("QRcode:", m_sQRitem);
+        
+        m_iCanCfg = set.value("CanCfg/value").toInt();
+        DEBUG_PARAM("cancfg:", m_iCanCfg);
+        can_dbus_interface->canwrite(id_canConfig, m_iCanCfg);
     }
+    
     DEBUG_PARAM("db:", access(m_dbName.data(), F_OK));
     if(access(m_dbName.data(), F_OK) != 0)
     {
@@ -3252,21 +3278,6 @@ void MainWindow::init_db()
         system("mv /run/media/usb/tbox/ /run/media/usb/tbox_after/");
         system("sync");
     }
-    
-    /*if(m_bSIM && m_bRootkey && !access("/run/media/usb/tbox/SIM_RootKey.txt", F_OK))
-    {
-        DEBUGLOG;
-        initDatabase("/run/media/usb/tbox/SIM_RootKey.txt");
-        system("mv /run/media/usb/tbox/ /run/media/usb/tbox_after/");
-        system("sync");
-    }
-    else if(!m_bSIM && access(m_dbName.data(), F_OK) != 0)
-    {
-        DEBUGLOG;
-        initDatabase("");
-        system("sync");
-        DEBUG_PARAM("----------------:", access(m_dbName.data(), F_OK));
-    }*/
 }
 
 void MainWindow::onConnectServer()
@@ -3278,51 +3289,7 @@ void MainWindow::onConnectServer()
     mon1->start();
     if(!thread_m->isRunning()) { thread_m->start(); }
 }
-/*
-void MainWindow::getDBTerm()
-{
-    DEBUGLOG;
-    int ret;
-    sqlite3_stmt *stmt;
-    DEBUG_PARAM("open_db_flag:", open_db_flag);
-    if(open_db_flag)
-    {
-        open_db_flag = false;
-        if((ret = sqlite3_open(m_dbName.data(),&m_pdb)) != SQLITE_OK)
-        {
-            fprintf(stderr,"Can't open databaseOne: %s\n", sqlite3_errmsg(m_pdb));
-            sqlite3_close(m_pdb);
-        }
-    }
 
-    char *sql = sqlite3_mprintf("PRAGMA table_info('%s')", TABLE_NAME);
-    DEBUG_PARAM("sql:", sql);
-    fflush(stdout);
-    if((ret = sqlite3_prepare(m_pdb, sql, strlen(sql), &stmt, 0)) != SQLITE_OK)
-    {
-        fprintf(stderr, "select error: %s\n", sqlite3_errmsg(m_pdb));
-    }
-    //execute
-    DEBUG_PARAM("ret:", ret);
-    if(ret == SQLITE_DONE)
-    {
-        DEBUG_CHAR("sqlite3_step ok!");
-        fflush(stdout);
-    }
-    
-    m_msiDBTerm.clear();
-    int index = 0;
-    while (sqlite3_step(stmt) == SQLITE_ROW) 
-    {
-        char *theGetData = (char *)sqlite3_column_text(stmt, 1);
-        DEBUG_PARAM("data:", theGetData);
-        m_msiDBTerm[QString(theGetData)] = index++;
-    }
-    qDebug()<<m_msiDBTerm.keys();
-    
-    sqlite3_finalize(stmt);
-}
-*/
 void MainWindow::onSigBroadcastRing()
 {
     thread_m->sos_flag = false;
@@ -3502,17 +3469,7 @@ void MainWindow::initDatabase(QString filePath)
         DEBUG_CHAR("create table_1 ok!");
     }
 }
-/*
-bool MainWindow::checkTermExist(const QString term)
-{
-    QMap<QString, int>::iterator iter = m_msiDBTerm.find(term);
-    if(iter != m_msiDBTerm.end())
-    {
-        return true;
-    }
-    return false;
-}
-*/
+
 void MainWindow::readDataFile(QString filePath)
 {
     DEBUG_PARAM("filePath:", filePath);
@@ -3779,15 +3736,15 @@ QString MainWindow::getData(QString iccid,QString data)
         fflush(stdout);
     }
     char *theGetDate = (char *)sqlite3_column_text(stmt, 0);
+    QString strGet = QString(theGetDate);
+    sqlite3_finalize(stmt);
 
-    if(QString(theGetDate) != "")
+    if(strGet != "")
     {
-        return QString(theGetDate);
+        return strGet;
     }
     else
         return "";
-
-    sqlite3_finalize(stmt);
 }
 /*********************************************************/
 void MainWindow::on_update_sn()
@@ -3958,16 +3915,17 @@ QString MainWindow::getDataByIMEI(QString imei,QString data)
         fflush(stdout);
     }
     DEBUG_PARAM("ret:", ret);
+    
     char *theGetDate = (char *)sqlite3_column_text(stmt, 0);
+    QString strGet = QString(theGetDate);
+    sqlite3_finalize(stmt);
 
-    if(QString(theGetDate) != "")
+    if(strGet != "")
     {
-        return QString(theGetDate);
+        return strGet;
     }
     else
         return "";
-
-    sqlite3_finalize(stmt);
 }
 
 bool MainWindow::findData(const QString iccid, const QString imei)
@@ -4012,15 +3970,28 @@ bool MainWindow::findData(const QString iccid, const QString imei)
         fflush(stdout);
     }
     DEBUG_PARAM("ret:", ret);
-    char *theGetDate = (char *)sqlite3_column_text(stmt, 0);
-
-    if(QString(theGetDate) != "")
+    
+    int cCount = sqlite3_column_count(stmt);
+    char *theGetDate = nullptr;
+    bool bEmpty = true;
+    for(int i=0; i<cCount; ++i)
     {
-        return true;
+        theGetDate = (char *)sqlite3_column_text(stmt, i);
+        DEBUG_PARAM2("index:", i, "text:", QString(theGetDate));
+        if(QString(theGetDate) != "")
+        {
+            bEmpty = false;
+            break;
+        }
+    }
+    sqlite3_finalize(stmt);
+    DEBUG_PARAM("is exist:", bEmpty);
+    if(bEmpty)
+    {
+        return false;
     }
     else
-        return false;
-    sqlite3_finalize(stmt);
+        return true;
 }
 
 //////////////////////////////encode//////////////////////////////////

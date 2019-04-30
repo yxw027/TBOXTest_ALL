@@ -98,6 +98,7 @@ typedef enum message_id{
     id_acc_status,
     id_acc_app_start,
     id_test,
+    id_canConfig
 }CanMessageID;
 
 #endif // SHARE_H

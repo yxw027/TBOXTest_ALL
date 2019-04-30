@@ -7,6 +7,9 @@ value=FFF
 [ACC]
 value=5000
 
+[CanCfg]
+value=0
+
 [NAME]
 pname=车载远程通信终端总成
 
@@ -15,9 +18,6 @@ pn=89221-THA10
 
 [Phone]
 number=14737226487
-
-[ProModel]
-pmodel=产品类型
 
 [ProjectName]
 value=GV1351
@@ -45,9 +45,6 @@ value=808080
 
 [Version]
 pversion=89221-THA10
-
-[power]
-volage=12
 
 [vehicle]
 modle=10TD

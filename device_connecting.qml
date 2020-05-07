@@ -13,6 +13,7 @@ Item {
         anchors.centerIn: parent
         source: "./image/device/device_connect_fail.png"
     }
+
     Text {
         id: device_name
         anchors.left: device.left

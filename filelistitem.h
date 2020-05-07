@@ -45,7 +45,9 @@ public:
 
 
     void removeItem(int index);
+
     int getIndexbyFilePath(QString FilePath);
+
     //Q_INVOKABLE void setAvailableStateByIndex(int index, bool state);
 
     //Q_INVOKABLE void updateAvailableStateByIndex(int index);
@@ -55,6 +57,7 @@ public:
     void addFileListItem(const FileListItem &item);
 
     Q_INVOKABLE QString getFilePathByIndex(int index);
+
     QString getFileNameByIndex(int index);
 
     //Q_INVOKABLE bool getAvailableStateByIndex(int index);

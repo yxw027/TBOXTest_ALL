@@ -2,19 +2,25 @@ import QtQuick 2.0
 
 Item {
     id: bgSection
-    anchors.left: parent.left; anchors.top: parent.top
-    
+    anchors.left: parent.left;
+    anchors.top: parent.top
+
+    property string titleText: ""
+    property double  powerText: 0;
+
     Image {
         id: bg
         anchors.fill: parent
         source: "./image/mainPage/bg.png"
     }
+
     Image {
         id: title
         anchors.left: parent.left
         anchors.top: parent.top
         source: "./image/mainPage/tiltle.png"
     }
+
     Text {
         id: title_name
         font.pixelSize: 35
@@ -26,12 +32,14 @@ Item {
         text: titleText
          font.family: fontFamily;
     }
+
     Image {
         id: logo
         anchors.left: parent.left
         anchors.top: parent.top
         source: "./image/mainPage/logo.png"
     }
+
     Image {
         id: battery
         anchors.top: parent.top
@@ -40,6 +48,7 @@ Item {
         anchors.leftMargin: 869
         source: "./image/mainPage/battery.png"
     }
+
     Text {
         id: power
         font.pixelSize: 22
@@ -50,9 +59,6 @@ Item {
         text: qsTr("DC "+ powerText + "V")
         font.family: fontFamily;
     }
-    
-    property string titleText: ""
-    property double  powerText: 0;
 
     Connections{
         target: Thread
@@ -64,11 +70,9 @@ Item {
             }
             powerText = power;
         }
-    }
-    Connections {
-        target: Thread
         onSetTitleText:{
             titleText = tText;
         }
     }
+
 }

@@ -4,16 +4,21 @@ Item {
     id: upgradePage
     visible: false
     anchors.fill: parent
+
+    property string updateText: ""
+
     Image {
         id: bg
         anchors.fill: parent
         source: "./image/mainPage/bg.png"
     }
+
     Image {
         id: device
         anchors.centerIn: parent
         source: "./image/device/device_connect_fail.png"
     }
+
     Text {
         id: m_text
         anchors.left: device.left
@@ -25,14 +30,13 @@ Item {
         text: updateText
          font.family: fontFamily;
     }
-    property string updateText: ""
 
-    Connections{
-        target: Thread
-        onUpgrade:{
-            //console.log("ppgrade!!!");
-            updateText = text;
-            upgradePage.visible = true;
-        }
-    }
+//    Connections{
+//        target: Thread
+//        onUpgrade:{
+//            //console.log("ppgrade!!!");
+//            updateText = text;
+//            upgradePage.visible = true;
+//        }
+//    }
 }

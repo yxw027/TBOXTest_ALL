@@ -144,31 +144,19 @@ Item {
         onGps_start_num: {
             text_num = num;
         }
-    }
-    
-    Connections {
-        target: Thread
         onGps_start_time: {
             stime = time;
         }
-    }
-    
-    Connections{
-        target: Thread
-        onMcuVersion:
-        {
+        onMcuVersion:{
             mcuVersion = mcu_buf;
         }
-        onAppVersion:
-        {
+        onAppVersion:{
             appVersion = app_buf;
         }
-        onOsVersion:
-        {
+        onOsVersion:{
             osVersion = os_buf;
         }
-        onSysVersion:
-        {
+        onSysVersion:{
             sysVersion = sys_buf;
         }
     }

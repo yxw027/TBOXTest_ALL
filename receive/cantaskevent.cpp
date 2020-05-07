@@ -6,22 +6,8 @@ bool CanTaskEvent::Init()
     int loop = 3;
     while(loop)
     {
-        m_writefd = open(MAILBOX_PATH, O_RDWR);
+        m_writefd = open(CSS0_PATH, O_RDWR);
         if(m_writefd ==-1)
-        {
-            usleep(10000);
-            loop--;
-        }
-        else
-        {
-            break;
-        }
-    }
-    loop = 3;
-    while(loop)
-    {
-        m_readfd = open(MAILBOX_PATH, O_RDONLY);
-        if(m_readfd ==-1)
         {
             usleep(10000);
             loop--;
@@ -45,25 +31,25 @@ bool CanTaskEvent::Init()
             break;
         }
     }
-    loop = 3;
-    while(loop)
-    {
-        m_css0fd = open(CSS0_PATH, O_RDONLY);
-        if(m_css0fd ==-1)
-        {
-            usleep(10000);
-            loop--;
-        }
-        else
-        {
-            break;
-        }
-    }
+//    loop = 3;
+//    while(loop)
+//    {
+//        m_css0fd = open(CSS0_PATH, O_RDONLY);
+//        if(m_css0fd ==-1)
+//        {
+//            usleep(10000);
+//            loop--;
+//        }
+//        else
+//        {
+//            break;
+//        }
+//    }
     m_event1_fd = open(EVENT_1_PATH, O_RDONLY);
     m_event2_fd = open(EVENT_2_PATH, O_RDONLY);
 
 
-    m_pollfd[0].fd = m_readfd;
+    m_pollfd[0].fd = m_writefd;
     m_pollfd[1].fd = m_rvcfd;
     m_pollfd[2].fd = m_css0fd;
     m_pollfd[3].fd = m_event1_fd;
@@ -87,8 +73,7 @@ bool CanTaskEvent::Init()
 
 void CanTaskEvent::Deinit()
 {
-    ::close(m_readfd);
-    ::close(m_css0fd);
+//    ::close(m_css0fd);
     ::close(m_rvcfd);
     ::close(m_writefd);
     ::close(m_event1_fd);
@@ -131,8 +116,8 @@ bool CanTaskEvent::Write2MCU(unsigned int msgID, unsigned int param)
 {
     if(-1 != m_writefd)
     {
-        m_data.dlen=8;
-        m_data.hlen=8;
+//        m_data.dlen=8;
+//        m_data.hlen=8;
         m_data.id=msgID;
         m_data.data=param;
 

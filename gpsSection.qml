@@ -4,6 +4,7 @@ Item {
     id: gpsSection
     anchors.left: parent.left
     anchors.top: parent.top
+
     property string text_num: "";
 
     Image {
@@ -49,6 +50,7 @@ Item {
             anchors.leftMargin: 711
             source: "./image/gps_sig/sig_0.png"
         }
+
         Image {
             id: cmcc_sig1
             visible: false
@@ -58,6 +60,7 @@ Item {
             anchors.leftMargin: 711
             source: "./image/gps_sig/sig_1.png"
         }
+
         Image {
             id: cmcc_sig2
             visible: false
@@ -67,6 +70,7 @@ Item {
             anchors.leftMargin: 711
             source: "./image/gps_sig/sig_2.png"
         }
+
         Image {
             id: cmcc_sig3
             visible: false
@@ -76,6 +80,7 @@ Item {
             anchors.leftMargin: 711
             source: "./image/gps_sig/sig_3.png"
         }
+
         Image {
             id: cmcc_sig4
             visible: false
@@ -85,6 +90,7 @@ Item {
             anchors.leftMargin: 711
             source: "./image/gps_sig/sig_4.png"
         }
+
         Image {
             id: cmcc_sig5
             visible: false
@@ -94,6 +100,7 @@ Item {
             anchors.leftMargin: 711
             source: "./image/gps_sig/sig_4.png"
         }
+
         Image {
             id: cmcc
             anchors.top: parent.top
@@ -123,6 +130,7 @@ Item {
 //            anchors.leftMargin: 843
 //            source: "./image/gps_sig/_2G_n.png"
 //        }
+
         Image {
             id: _BT
             anchors.top: parent.top
@@ -131,6 +139,7 @@ Item {
             anchors.leftMargin: 901
             source: "./image/gps_sig/bt_n.png"
         }
+
         Image {
             id: _WIFI
             anchors.top: parent.top
@@ -138,16 +147,6 @@ Item {
             anchors.topMargin: 516
             anchors.leftMargin: 946
             source: "./image/gps_sig/wifi_n.png"
-        }
-    }
-    
-    Connections{
-        target: Thread
-        onShow_wifi:
-        {
-            //console.log("onShow_wifi is emit!!!");
-            _WIFI.source="";
-            _WIFI.source="./image/gps_sig/wifi_y.png";
         }
     }
 
@@ -173,14 +172,6 @@ Item {
         font.pixelSize: 24
         text: text_num
         font.family: fontFamily;
-    }
-    
-    Connections{
-        target: Thread
-        onGps_start_num:
-        {
-            text_num = num;
-        }
     }
 
     Loader{
@@ -226,6 +217,7 @@ Item {
         anchors.leftMargin: 714
         source: "./image/gps_sig/gps_cut_line.png"
     }
+
     Image {
         id: _gps_cut_line1
         anchors.top: parent.top
@@ -234,6 +226,7 @@ Item {
         anchors.leftMargin: 714
         source: "./image/gps_sig/gps_cut_line.png"
     }
+
     Image {
         id: _gps_cut_line2
         anchors.top: parent.top
@@ -242,6 +235,7 @@ Item {
         anchors.leftMargin: 714
         source: "./image/gps_sig/gps_cut_line.png"
     }
+
     Image {
         id: _gps_cut_line3
         anchors.top: parent.top
@@ -253,8 +247,7 @@ Item {
 
     Connections{
         target: Thread
-        onSignal_strength:
-        {
+        onSignal_strength:{
             cmcc_sig0.visible = false;
             if(strength<=10)
             {
@@ -277,5 +270,14 @@ Item {
                 cmcc_sig4.visible = true;
             }
         }
+        onGps_start_num:{
+            text_num = num;
+        }
+        onShow_wifi:{
+            //console.log("onShow_wifi is emit!!!");
+            _WIFI.source="";
+            _WIFI.source="./image/gps_sig/wifi_y.png";
+        }
     }
+
 }

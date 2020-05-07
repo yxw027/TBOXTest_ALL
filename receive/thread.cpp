@@ -99,16 +99,9 @@ void *CThread::ThreadProcess(void *pArg)
     pthread_t tid = pthread_self();
     printf("[ %s  %d ]    tid2: %lu     \n", __FUNCTION__, __LINE__, (int)tid);
 
-//    pthread_detach(pthread_self());
+    pthread_detach(pthread_self());
 
     CThread *pThis = (CThread *)pArg;
-
-//    if(pThis != NULL)
-//    {
-//        pThis->Processing();
-//    }
-
-
 
     if(pThis != NULL)
     {

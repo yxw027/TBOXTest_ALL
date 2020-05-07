@@ -25,15 +25,16 @@ Item {
     function createBarArea(){
         var object;
         for(var i = 0; i < barCount; i++){
-            object = component.createObject(root,
-                                            {
-                                                "x":root.spacing + i*barInteral,
-                                                "width":root.barWidth,
-                                                "height":root.height,
-                                                "anchors.bottom":root.bottom,
-                                                "barHeight":0,
-                                                "index": i.toString()
-                                            });
+            object = component.createObject(
+                        root,
+                        {
+                            "x":root.spacing + i*barInteral,
+                            "width":root.barWidth,
+                            "height":root.height,
+                            "anchors.bottom":root.bottom,
+                            "barHeight":0,
+                            "index": i.toString()
+                        });
             barObject.push(object);
         }
     }
@@ -92,22 +93,4 @@ Item {
             }
         }
     }
-    /*Timer{
-        interval: 500;
-        repeat: true;
-        running: true;
-        onTriggered: {
-            if(barObject.length > 0){//生成随机数
-                for(var i = 0; i < barCount; i++){
-                    barObject[i].barHeight = Math.random()*root.height;
-                    barObject[i].barHeight > 50 ? barObject[i].barColor="green" : barObject[i].barColor="yellow";
-                }
-            }
-            else
-            {
-                root.resetBarArea();
-                root.createBarArea();
-            }
-        }
-    }*/
 }

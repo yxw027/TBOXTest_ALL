@@ -1,6 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "common.h"
+#include <map>
+#include "receive/canservice.h"
+
 extern "C" {
 #include <stdlib.h>
 #include <unistd.h>
@@ -38,7 +42,7 @@ extern "C" {
 #include <QThread>
 #include <QDebug>
 #include <QTcpSocket>
- #include <QtNetwork>
+#include <QtNetwork>
 #include <QAbstractSocket>
 #include <QByteArray> 
 #include <QQuickImageProvider>
@@ -64,13 +68,13 @@ extern "C" {
 #include <QQmlExtensionPlugin>
 #include <qendian.h>
 #include <candbus_interface.h>
-#include "sim800_interface.h"
-#include "bt_interface.h"
 #include <QMediaPlayer>
 #include <QFile>
 #include <QTextCodec>
 #include <sqlite3.h>
-#define SQLITE_DATABASE_ONE     "/run/media/usb/"
+
+
+#define SQLITE_DATABASE_ONE   "/run/media/usb/"
 #define TABLE_NAME          "TBoxData"
 #include "hardkeymonitorinterface_interface.h"
 //LiberationMono-Regular.ttf
@@ -80,6 +84,10 @@ extern "C" {
 #define FONT_PATH "/usr/lib/fonts/MicroVistaHei.ttf"
 //#define FONT_NAME "WenQuanYi Micro Hei"
 #define FONT_NAME "MicroVistaHei"
+
+#define NonDATONG 00
+
+using namespace std;
 
 class FileListItemModel ;
 
@@ -112,12 +120,6 @@ struct setFile{
     #define  DEBUG_PARAM(str, param)
     #define  DEBUG_CHAR(str)
     #define  DEBUG_PARAM(str1, param1, str2, param2)
-#endif
-
-#ifndef UPDATE//系统升级
-    #define UPDATE 01
-#elif
-    #define UPDATE
 #endif
 
 class encode : public QThread
@@ -174,67 +176,31 @@ class FortuneThread : public QThread, public QQuickImageProvider
 public:
     explicit FortuneThread();
     ~FortuneThread();
-    void readDisk();
-    //void readDiskIMEI();
-    void getInfo(QString hostName, quint16 port);
-    void run() Q_DECL_OVERRIDE;
-    Q_INVOKABLE void handleSetFile();
-    Q_INVOKABLE void handleCan();
-    Q_INVOKABLE void handleCanAwake();
-    Q_INVOKABLE void handle6AxisSensor();
-    Q_INVOKABLE void handleEMMC();
-    Q_INVOKABLE void handleCharge();
-    Q_INVOKABLE void handleWIFI();
-    Q_INVOKABLE void handleBtCom();
-    Q_INVOKABLE void handleNFC();
-    Q_INVOKABLE void handleIVI();
-    Q_INVOKABLE void handleIVIT();
-    //Q_INVOKABLE void handleLoginSever();
-    Q_INVOKABLE void handleAirBag();
-    Q_INVOKABLE void handleGPSOpen();
-    //Q_INVOKABLE void handleGPShort();
-    Q_INVOKABLE void handleGPSSignal();
-    Q_INVOKABLE void handleMajorPower();
-    //Q_INVOKABLE void handleMinorPower();
-    Q_INVOKABLE void handleACCOFF();
-    Q_INVOKABLE void restart();
-    Q_INVOKABLE void stop_flag();
-    Q_INVOKABLE void thread_eixt();
-    Q_INVOKABLE void change_serial();
-    Q_INVOKABLE void change_serialCY();
-    void handleBt(bool state);
-    int checkGPIO(int port, bool flag);
-    void handleLockCar();
-    void handleUnlockCar();
-    void handleCarDoor();
-    void excutePopen(char* scr, char* dst, int size_n);
-    void handleCarLamp();
-    bool detect_dark_current();
-    bool detect_dark_current_read();
-    bool set_gpio_val( int num, bool dir,int value );
-    //void handle_cfg_mode();
-    //void handle_cfg_modeIMEI();
-    void handle_cfg_modeNew();
-    //void tag_pack( uint8_t cmd, uint8_t tag, uint16_t tlvLen);
-    //void tag_packIMEI( uint8_t cmd, uint8_t tag, uint16_t tlvLen);
-    void tag_packNew( uint8_t cmd, uint8_t tag, uint16_t tlvLen );
-    void handleqrCode();
-    void handleqrCodeIMEI();
-    Q_INVOKABLE void chang_stop_flag();
-    Q_INVOKABLE void disable_12V();
     QPixmap generateQRcode(QString tempstr);
     QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
-    Q_INVOKABLE void sendMsg(uint16_t msgBodyLen, uint8_t cmd, uint8_t tag, uint16_t tlvLen);
-    //void setTestname(QString testName) { this->testname = testName; emit testnameChanged(); }
-    void initListView();
+    QString getNameForIndex(int index, int command);
+    void run() Q_DECL_OVERRIDE;
+    void qrcodeGroup();
+    void initTestListView();
     void iniTableViewByCarinfo();
-    void iniTableViewByqr();
+    void handleCandataMessage(Mailbox_Read_Msg_ST &message);
+    void handleQrcode();
+    void handleTestItemAck(uint16_t result,uint16_t cmdid);
+    void handleErrorItem(int curItem);
+    void startNextTestItem();
+    void readDID(Mailbox_Read_Msg_ST &message);
+    void writeDID(Test_Mode_EN cmdId,PROJECT_INFO_EN infoType);
+    void canWriteData(Mailbox_Write_Msg_ST data);
+    int  confirmTestResult(uint16_t cmdid);
     Q_INVOKABLE void init();
-    Q_INVOKABLE void clear_socket();
+    Q_INVOKABLE void restart();
+    Q_INVOKABLE void thread_eixt();
+    Q_INVOKABLE void disable_12V();
 
 signals:
     void errorCode(QString functionName, int param);
     void qrcode();
+    void sigQrGroup();
     void gpsBarData(QVariant num, QVariant strengthNum);
     void gps_start_num(QString num);
     void gps_start_time(QString time);
@@ -242,15 +208,10 @@ signals:
     void time_start(QString testname);
     void time_stop();
     void msg(QByteArray msg);
-    void testnameChanged();
     void device_disconnect();
     void udisk_disconnect();
     void power_signal(double power, bool val);
-    void pwm_start();
-    void pwm_stop();
     void signal_strength(int strength);
-    void update_iccid();
-    void update_sn();
     void show_main_page();
     void show_wifi();
     void m_hardkey(int msgID);
@@ -259,150 +220,115 @@ signals:
     void osVersion(QString os_buf);
     void sysVersion(QString sys_buf);
     void setTitleText(QString tText);
-    //void ring_pickdown();
-#ifdef UPDATE
-    void upgrade(QString text);
-#endif
 
 public slots:
-    void on_start_thread();
-    void test();
-    void read_data();
-    void onSigBleDevName(QString name);//
-    void onSigSwitchStatus(bool status);
+    void onSigQrGroup();
+    void onTestItemTimeout();
     
 public:
-    QTcpSocket* socket_m;
+    int m_canidRead;
+    int m_canidWrite;
+    int m_qrShowFlag;
+    int m_testItemCount;
+
+    //Read  DID
+    QString m_sw_version;
+    QString m_hw_version;
+    QString m_v2x_version;
+    QString m_hp_version;
+    QString m_app_version;
+
+    //Write DID
+    QString m_vinCode;
+    QString m_productDate;
+    QString m_suplayerCode;
+    QString m_ipAddr;
+    QString m_wifiName;
+
+    QString m_sim_number;
+    QString m_imei;
+    QString m_imsi;
+    QString m_iccid;
+    QString m_sn;
+    QString m_pn;
+    QString reserved1="";
+    QString reserved2="";
+
+    QString m_productName;
+    QString m_productType;
+    QString m_qrShowConfig;
+    QString m_testItemConfig;
+    Qrcode_Show_Flag_ST Qr_Show_Flag;
+    Test_Item_Flag_ST   Test_Item_Flag;
+    QMap<int,int> m_MapTestItemFlag;
+
     FileListItemModel* listModel;
     FileListItemModel* tableModel;
     FileListItemModel* tableMode2;
     FileListItemModel* tableModelQR;
-    setFile setfile_m;
-    int test_len;
-    char buf[256];
-    int offset = 0;
-    char readMsg[256];
-    bool stop;
-    int can_flag[4]={0};
-    bool write_flag;
-    QString list1;
-    QString list2;
-    uint8_t sig_strength;
-    bool db_init_flag;
-    QString tBoxSN1;
-    QString tBoxSN2;
-    QString tBoxSN3;
-    bool m_bt_flag;
-    char hw[16]={0};
-    ComQtYeedonBtInterface* m_btInterface;
     QSettings* setting;
-    QString  m_serial;
-    QString phone_number;
-    bool change_sn;
-    bool sos_flag;
-    bool lock_flag;
-    bool unlock_flag;
-    bool bt_flag;
-    QString m_power;
-    QString btName;
-    
-    QString m_imei;
-    char imei[24]={0};
-    QString hwIMEI;
-    QString m_sProductModel;
-    QString m_sProductNumber;
+    QString qrcodeStr = " ";
 
 private:
-    QByteArray qrcodeStr = " ";
-    QString qrcodeStr_m;
-    QString hostName;
-    quint16 port; 
+    struct pollfd m_pollfd[MAX_POLL_EVENT];
+    Mailbox_Read_Msg_ST m_canReadData;
+    Mailbox_Write_Msg_ST m_canWriteData;
+    QMap<QString, int> m_msiQRitem;
     QMutex mutex;
     QWaitCondition cond;
-    bool quit;
-    bool read;
-    QString vehicle;
-    QString sk;
-    QString m_vpn;
-    int m_acc;
-    bool m_bA5;
-    bool m_bTB;
-    bool analyze_section_data();
-    QVector<QString> m_vsTestName;
-    QString m_checkItem;
-    QMap<QString, int> m_msiQRitem;
-    QString m_sProductName;
+    QString m_readDIDInfo;
+    QTimer *m_pTestItemTimer;
+    bool m_can_init_status;
+    int m_mailbox_readfd;
+    int m_mailbox_writefd;
+    int m_curTestItemIndex = 0;
+    int m_readDIDLen;
 };
 
 class MainWindow : public QQuickView
 {
     Q_OBJECT
+
 public:
     explicit MainWindow();
     ~MainWindow();
+    void init();
+    void init_db();
     void initDatabase(QString filePath);
     void deinitDatabase();
     void insertData(QString iccid, QString rootKey, QString sim);
-    //void insertData(QString iccid, QString imei, QString imsi, QString sn, QString swversion, QString hwversion, QString rootKey, QString sim, QString productModel, int flag, QString project);
     void updateFlagByIccid(QString iccid, QString flag);
     void updateOtherByIccid(QString iccid, QString model,QString data);
     void readDataFile(QString filePath);
     QString getData(QString iccid,QString data);
-    static void *initHotPlugThread(void *args);
-    int initHotPlugSocket();
-    Q_INVOKABLE void setAudioPlayState();
     Q_INVOKABLE void update_db_flag(bool flag);
-    void init_db();
     /*********************************************/
     void insertData(const QString iccid, const QString imei);
-    //void insertData(QString imei, QString sn, QString swversion, QString hwversion, QString productModel, QString flag);
     void updateOtherByImei(QString imei, QString model,QString data);
     QString getDataByIMEI(QString imei,QString data);
     bool findData(const QString iccid, const QString imei);
 
-signals:
-    void start_thread();
-    void sigLoadLocalFileListWithOutUSBInform();
-    void sigPlayListClear();
-    void sigSearchMediaFileTimer();
-    void plug_in_udisk();
-    void plug_in_device();
-    void sigPlayAudio(QString filePath);
-    void sigBroadcastRing();
-
 public slots:
-    void init();
-    void onSigBroadcastRing();
-    void onbroadTest(int value);
-    void on_update_iccid();
-    void on_update_sn();
     void onConnectServer();
     void test(int msgID, int param);
 
 public:
     ComQtYeedonCanInterface* can_dbus_interface;
-    ComQtYeedonCallInterface* m_pCallInterface;
-    bool m_playFinished = false;
     monitorusb * mon1;
     monitorrndis * mon2;
     QTimer *m_pConnectServerTime;
-    QTimer *m_pInitTimer;
     FortuneThread* thread_m = NULL;
     ComTiotDbusHardkeyInterface* m_harkey=NULL;
     encode * in = NULL;
     QString  m_rootKey;
-    int ring_num;
-    bool m_bSIM;
-    bool m_bRootkey;
     QString m_sQRitem;
     QString m_sProName;
     QString m_sSIMnumber;
     QString m_sSerialShow;
+    bool m_bSIM;
     
 private:
-    int m_hotplug_sd;
-    bool m_usbPullout;
-    sqlite3 *m_pdb;   //need memory?
+    sqlite3 *m_pdb;
     QString m_sDBTerm;
     QByteArray m_dbName;
     QMap<QString, int> m_msiDBTerm;

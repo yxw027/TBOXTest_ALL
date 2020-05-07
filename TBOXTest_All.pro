@@ -2,7 +2,7 @@ TEMPLATE = app
 
 QT += qml quick core
 #QT += core gui
-#QT += widgets
+QT += widgets
 QT += network
 QT += dbus
 QT += multimedia
@@ -27,10 +27,14 @@ SOURCES += main.cpp \
     QRCode/rscode.c \
     QRCode/split.c \
     candbus_interface.cpp \
-    sim800_interface.cpp \
     uartcheck.cpp \
     hardkeymonitorinterface_interface.cpp \
+    receive/thread.cpp \
+    receive/log.cpp \
+    receive/cantaskevent.cpp \
+    receive/canservice.cpp \
     bt_interface.cpp
+
 
 RESOURCES += qml.qrc
 
@@ -54,21 +58,41 @@ HEADERS += \
     QRCode/rscode.h \
     QRCode/split.h \
     candbus_interface.h \
-    sim800_interface.h \
     share.h \
     uartcheck.h \
     mainwindow.h \
     hardkeymonitorinterface_interface.h \
+    common.h \
+    receive/thread.h \
+    receive/singletonbase.h \
+    receive/log.h \
+    receive/cantaskevent.h \
+    receive/canservice.h \
     bt_interface.h
 
 
-unix:!macx: LIBS += -L$$PWD/../../../../../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -lsqlite3
+#unix:!macx: LIBS += -L$$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -lsqlite3
 
-unix:!macx: LIBS += -L$$PWD/../../../../../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -ludev
+#unix:!macx: LIBS += -L$$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -ludev
 
-INCLUDEPATH += $$PWD/../../../../../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
-DEPENDPATH += $$PWD/../../../../../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
+#INCLUDEPATH += $$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
+#DEPENDPATH += $$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
 
 
 
-unix:!macx: LIBS += -lasound
+#unix:!macx: LIBS += -lasound
+
+unix:!macx: LIBS += -L$$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -lsqlite3
+
+INCLUDEPATH += $$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
+DEPENDPATH += $$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
+
+unix:!macx: LIBS += -L$$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -ludev
+
+INCLUDEPATH += $$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
+DEPENDPATH += $$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
+
+unix:!macx: LIBS += -L$$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -lasound
+
+INCLUDEPATH += $$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include
+DEPENDPATH += $$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include

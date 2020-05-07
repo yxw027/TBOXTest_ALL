@@ -3,11 +3,13 @@ import QtQuick 2.0
 Item {
     id: qrcodePage
     anchors.fill: parent
+
     Loader{
         id: bg
         anchors.fill: parent
         source: "./bgSection.qml"
     }
+
     Image {
         id: qrFrame
         anchors.top: parent.top
@@ -16,6 +18,7 @@ Item {
         anchors.leftMargin: 28
         source: "./image/qrcode/qrFrame.png"
     }
+
     Image {
         id: qrcode
         anchors.top: parent.top
@@ -24,14 +27,14 @@ Item {
         anchors.leftMargin: 64
         height: 406
         width: 406
-        //source: "image://qrcode/";
+        source: "image://qrcode/";
     }
 
     Connections{
         target: Thread
         onQrcode: {
             qrcode.source = "";
-            qrcode.source = "image://qrcode/";
+            qrcode.source = "image://qrcode/" + Math.random();
             qrcodePage.visible = true;
             //thread_eixt();
         }
@@ -50,18 +53,23 @@ Item {
         model:TableModelQR
         delegate: carInfoDelegate
     }
+
     Component{
         id: carInfoDelegate
         Item {
-            id: wrapper; width: carInfo.cellWidth; height: carInfo.cellHeight;
+            id: wrapper;
+            width: carInfo.cellWidth;
+            height: carInfo.cellHeight;
+
             Text {
                 id: tableName
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 26
-                text: qsTr(FilePath+":")
+                text: qsTr(FilePath)
                 color: "white"
                 font.family: fontFamily;
             }
+
             Text {
                 id: tableInfo
                 width: parent.width-60
@@ -73,6 +81,7 @@ Item {
                 color: "white"
                 font.family: fontFamily;
             }
+
             Image {
                 id: cut_line1
                 anchors.top: tableInfo.bottom

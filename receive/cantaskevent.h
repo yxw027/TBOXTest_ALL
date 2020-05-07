@@ -54,9 +54,9 @@ enum rpmsg_mm_rvc_debug_mode {
 };
 
 struct write_data{
-  unsigned int hlen;
-  unsigned char hbuf[8];
-  unsigned int dlen;
+//  unsigned int hlen;
+//  unsigned char hbuf[8];
+//  unsigned int dlen;
   unsigned int id;
   unsigned int data;
 };
@@ -100,7 +100,6 @@ private:
     struct write_data m_data = {0};
     struct can_data m_canData = {0};
     int m_writefd;
-    int m_readfd;
     int m_rvcfd;
     int m_css0fd;
     int m_event1_fd;

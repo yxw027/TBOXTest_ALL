@@ -3,11 +3,16 @@ import QtQuick 2.0
 Rectangle {
     id:bar
     color: "transparent";
+
     property alias barHeight: barFg.height;
     property alias barColor: bar.colorTemp;
+    property string  index: "";
+    property string colorTemp: "green";
+
     function destoryBarItem(){
         bar.destroy();
     }
+
     Rectangle{
         id:barFg;
         anchors.left: parent.left;
@@ -17,6 +22,7 @@ Rectangle {
         height: 50;
         color:"transparent";
         clip: true;
+
         Rectangle{
             id:barBgColor
             anchors.left: parent.left;
@@ -36,6 +42,7 @@ Rectangle {
             }*/
         }
     }
+
     Text {
         id: num
         anchors.top: barFg.bottom
@@ -46,6 +53,4 @@ Rectangle {
         text: qsTr(index)
         font.family: fontFamily;
     }
-    property string  index: "";
-    property string colorTemp: "green";
 }

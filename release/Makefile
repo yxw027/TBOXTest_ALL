@@ -12,10 +12,10 @@ MAKEFILE      = Makefile
 
 CC            = arm-poky-linux-gnueabi-gcc  -march=armv7ve -marm -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7 --sysroot=/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi
 CXX           = arm-poky-linux-gnueabi-g++  -march=armv7ve -marm -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7 --sysroot=/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi
-DEFINES       = -DQT_NO_DEBUG -DQT_QUICK_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -DQT_QML_LIB -DQT_NO_QML_DEBUGGER -DQT_NETWORK_LIB -DQT_DBUS_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_NO_DEBUG -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DQT_MULTIMEDIA_LIB -DQT_GUI_LIB -DQT_QML_LIB -DQT_NO_QML_DEBUGGER -DQT_NETWORK_LIB -DQT_DBUS_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe  -O2 -pipe -g -feliminate-unused-debug-types  --sysroot=/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe  -O2 -pipe -g -feliminate-unused-debug-types  --sysroot=/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi -O2 -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../../autotool-All -I. -I/home/tywl/sxdWork/autotool-All/../../../../../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++
+INCPATH       = -I../../autotool-servcer -I. -I/home/chen/work/text/TCU/autotool-servcer/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/home/chen/work/text/TCU/autotool-servcer/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/home/chen/work/text/TCU/autotool-servcer/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtWidgets -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -isystem /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++
 QMAKE         = /opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -35,10 +35,10 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = TBOXTest_All1.0.0
-DISTDIR = /home/tywl/sxdWork/autotool-All/release/.tmp/TBOXTest_All1.0.0
+DISTDIR = /home/chen/work/text/TCU/autotool-servcer/release/.tmp/TBOXTest_All1.0.0
 LINK          = arm-poky-linux-gnueabi-g++  -march=armv7ve -marm -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7 --sysroot=/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi
 LFLAGS        = -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed --sysroot=/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi -Wl,-O1
-LIBS          = $(SUBLIBS) -L/home/tywl/sxdWork/autotool-All/../../../../../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -lsqlite3 -ludev -lasound -lQt5Quick -lQt5Multimedia -lQt5Gui -lQt5Qml -lQt5Network -lQt5DBus -lQt5Core -lGLESv2 -lpthread 
+LIBS          = $(SUBLIBS) -L/home/chen/work/text/TCU/autotool-servcer/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -lsqlite3 -ludev -lasound -lQt5Quick -lQt5Widgets -lQt5Multimedia -lQt5Gui -lQt5Qml -lQt5Network -lQt5DBus -lQt5Core -lGLESv2 -lpthread 
 AR            = arm-poky-linux-gnueabi-ar cqs
 RANLIB        = 
 SED           = sed
@@ -63,13 +63,15 @@ SOURCES       = ../main.cpp \
 		../QRCode/rscode.c \
 		../QRCode/split.c \
 		../candbus_interface.cpp \
-		../sim800_interface.cpp \
 		../uartcheck.cpp \
 		../hardkeymonitorinterface_interface.cpp \
+		../receive/thread.cpp \
+		../receive/log.cpp \
+		../receive/cantaskevent.cpp \
+		../receive/canservice.cpp \
 		../bt_interface.cpp qrc_qml.cpp \
 		moc_filelistitem.cpp \
 		moc_candbus_interface.cpp \
-		moc_sim800_interface.cpp \
 		moc_mainwindow.cpp \
 		moc_hardkeymonitorinterface_interface.cpp \
 		moc_bt_interface.cpp
@@ -86,14 +88,16 @@ OBJECTS       = main.o \
 		rscode.o \
 		split.o \
 		candbus_interface.o \
-		sim800_interface.o \
 		uartcheck.o \
 		hardkeymonitorinterface_interface.o \
+		thread.o \
+		log.o \
+		cantaskevent.o \
+		canservice.o \
 		bt_interface.o \
 		qrc_qml.o \
 		moc_filelistitem.o \
 		moc_candbus_interface.o \
-		moc_sim800_interface.o \
 		moc_mainwindow.o \
 		moc_hardkeymonitorinterface_interface.o \
 		moc_bt_interface.o
@@ -138,6 +142,8 @@ DIST          = ../QRCode/QRCode.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_bluetooth.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_bluetooth_private.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri \
+		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_charts.pri \
+		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_charts_private.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_concurrent.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_concurrent_private.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_core.pri \
@@ -167,6 +173,8 @@ DIST          = ../QRCode/QRCode.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_multimediawidgets_private.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_network.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_network_private.pri \
+		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_networkauth.pri \
+		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_networkauth_private.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_nfc.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_nfc_private.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_opengl.pri \
@@ -257,6 +265,7 @@ DIST          = ../QRCode/QRCode.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/dbusinterfaces.prf \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/dbusadaptors.prf \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/unix/opengl.prf \
+		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/uic.prf \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/unix/thread.prf \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/qmake_use.prf \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/file_copies.prf \
@@ -277,11 +286,16 @@ DIST          = ../QRCode/QRCode.pri \
 		../QRCode/rscode.h \
 		../QRCode/split.h \
 		../candbus_interface.h \
-		../sim800_interface.h \
 		../share.h \
 		../uartcheck.h \
 		../mainwindow.h \
 		../hardkeymonitorinterface_interface.h \
+		../common.h \
+		../receive/thread.h \
+		../receive/singletonbase.h \
+		../receive/log.h \
+		../receive/cantaskevent.h \
+		../receive/canservice.h \
 		../bt_interface.h ../main.cpp \
 		../mainwindow.cpp \
 		../filelistitem.cpp \
@@ -295,9 +309,12 @@ DIST          = ../QRCode/QRCode.pri \
 		../QRCode/rscode.c \
 		../QRCode/split.c \
 		../candbus_interface.cpp \
-		../sim800_interface.cpp \
 		../uartcheck.cpp \
 		../hardkeymonitorinterface_interface.cpp \
+		../receive/thread.cpp \
+		../receive/log.cpp \
+		../receive/cantaskevent.cpp \
+		../receive/canservice.cpp \
 		../bt_interface.cpp
 QMAKE_TARGET  = TBOXTest_All
 DESTDIR       = 
@@ -350,6 +367,8 @@ Makefile: ../TBOXTest_All.pro /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-l
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_bluetooth.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_bluetooth_private.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri \
+		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_charts.pri \
+		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_charts_private.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_concurrent.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_concurrent_private.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_core.pri \
@@ -379,6 +398,8 @@ Makefile: ../TBOXTest_All.pro /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-l
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_multimediawidgets_private.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_network.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_network_private.pri \
+		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_networkauth.pri \
+		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_networkauth_private.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_nfc.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_nfc_private.pri \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_opengl.pri \
@@ -469,6 +490,7 @@ Makefile: ../TBOXTest_All.pro /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-l
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/dbusinterfaces.prf \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/dbusadaptors.prf \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/unix/opengl.prf \
+		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/uic.prf \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/unix/thread.prf \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/qmake_use.prf \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/file_copies.prf \
@@ -479,6 +501,7 @@ Makefile: ../TBOXTest_All.pro /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-l
 		../TBOXTest_All.pro \
 		../qml.qrc \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/libQt5Quick.prl \
+		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/libQt5Widgets.prl \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/libQt5Multimedia.prl \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/libQt5Gui.prl \
 		/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/libQt5Qml.prl \
@@ -526,6 +549,8 @@ Makefile: ../TBOXTest_All.pro /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-l
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_bluetooth.pri:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_bluetooth_private.pri:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri:
+/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_charts.pri:
+/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_charts_private.pri:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_concurrent.pri:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_concurrent_private.pri:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_core.pri:
@@ -555,6 +580,8 @@ Makefile: ../TBOXTest_All.pro /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-l
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_multimediawidgets_private.pri:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_network.pri:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_network_private.pri:
+/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_networkauth.pri:
+/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_networkauth_private.pri:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_nfc.pri:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_nfc_private.pri:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/modules/qt_lib_opengl.pri:
@@ -645,6 +672,7 @@ Makefile: ../TBOXTest_All.pro /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-l
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/dbusinterfaces.prf:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/dbusadaptors.prf:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/unix/opengl.prf:
+/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/uic.prf:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/unix/thread.prf:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/qmake_use.prf:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/file_copies.prf:
@@ -655,6 +683,7 @@ Makefile: ../TBOXTest_All.pro /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-l
 ../TBOXTest_All.pro:
 ../qml.qrc:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/libQt5Quick.prl:
+/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/libQt5Widgets.prl:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/libQt5Multimedia.prl:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/libQt5Gui.prl:
 /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/libQt5Qml.prl:
@@ -677,8 +706,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../qml.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../filelistitem.h ../QRCode/bitstream.h ../QRCode/config.h ../QRCode/mask.h ../QRCode/mmask.h ../QRCode/mqrspec.h ../QRCode/qrencode_inner.h ../QRCode/qrencode.h ../QRCode/qrinput.h ../QRCode/qrspec.h ../QRCode/rscode.h ../QRCode/split.h ../candbus_interface.h ../sim800_interface.h ../share.h ../uartcheck.h ../mainwindow.h ../hardkeymonitorinterface_interface.h ../bt_interface.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../main.cpp ../mainwindow.cpp ../filelistitem.cpp ../QRCode/bitstream.c ../QRCode/mask.c ../QRCode/mmask.c ../QRCode/mqrspec.c ../QRCode/qrencode.c ../QRCode/qrinput.c ../QRCode/qrspec.c ../QRCode/rscode.c ../QRCode/split.c ../candbus_interface.cpp ../sim800_interface.cpp ../uartcheck.cpp ../hardkeymonitorinterface_interface.cpp ../bt_interface.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../filelistitem.h ../QRCode/bitstream.h ../QRCode/config.h ../QRCode/mask.h ../QRCode/mmask.h ../QRCode/mqrspec.h ../QRCode/qrencode_inner.h ../QRCode/qrencode.h ../QRCode/qrinput.h ../QRCode/qrspec.h ../QRCode/rscode.h ../QRCode/split.h ../candbus_interface.h ../share.h ../uartcheck.h ../mainwindow.h ../hardkeymonitorinterface_interface.h ../common.h ../receive/thread.h ../receive/singletonbase.h ../receive/log.h ../receive/cantaskevent.h ../receive/canservice.h ../bt_interface.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../main.cpp ../mainwindow.cpp ../filelistitem.cpp ../QRCode/bitstream.c ../QRCode/mask.c ../QRCode/mmask.c ../QRCode/mqrspec.c ../QRCode/qrencode.c ../QRCode/qrinput.c ../QRCode/qrspec.c ../QRCode/rscode.c ../QRCode/split.c ../candbus_interface.cpp ../uartcheck.cpp ../hardkeymonitorinterface_interface.cpp ../receive/thread.cpp ../receive/log.cpp ../receive/cantaskevent.cpp ../receive/canservice.cpp ../bt_interface.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -712,7 +741,6 @@ qrc_qml.cpp: ../qml.qrc \
 		../u_disk_conn_fail.qml \
 		../bgSection.qml \
 		../BarItem.qml \
-		../device_connecting.qml \
 		../upgrade.qml \
 		../mainpage.qml \
 		../qrCode.qml \
@@ -770,25 +798,24 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/data/dummy.cpp
 	arm-poky-linux-gnueabi-g++  -march=armv7ve -marm -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7 --sysroot=/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi -pipe  -O2 -pipe -g -feliminate-unused-debug-types  --sysroot=/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi -O2 -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_filelistitem.cpp moc_candbus_interface.cpp moc_sim800_interface.cpp moc_mainwindow.cpp moc_hardkeymonitorinterface_interface.cpp moc_bt_interface.cpp
+compiler_moc_header_make_all: moc_filelistitem.cpp moc_candbus_interface.cpp moc_mainwindow.cpp moc_hardkeymonitorinterface_interface.cpp moc_bt_interface.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_filelistitem.cpp moc_candbus_interface.cpp moc_sim800_interface.cpp moc_mainwindow.cpp moc_hardkeymonitorinterface_interface.cpp moc_bt_interface.cpp
+	-$(DEL_FILE) moc_filelistitem.cpp moc_candbus_interface.cpp moc_mainwindow.cpp moc_hardkeymonitorinterface_interface.cpp moc_bt_interface.cpp
 moc_filelistitem.cpp: ../filelistitem.h \
 		moc_predefs.h \
 		/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc
-	/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc $(DEFINES) --include ./moc_predefs.h -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++ -I/home/tywl/sxdWork/autotool-All -I/../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/usr/include -I/usr/local/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/arm-poky-linux-gnueabi -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/backward -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include-fixed -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include ../filelistitem.h -o moc_filelistitem.cpp
+	/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc $(DEFINES) --include ./moc_predefs.h -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++ -I/home/chen/work/text/TCU/autotool-servcer -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtWidgets -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/usr/include -I/usr/local/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/arm-poky-linux-gnueabi -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/backward -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include-fixed -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include ../filelistitem.h -o moc_filelistitem.cpp
 
 moc_candbus_interface.cpp: ../candbus_interface.h \
 		moc_predefs.h \
 		/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc
-	/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc $(DEFINES) --include ./moc_predefs.h -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++ -I/home/tywl/sxdWork/autotool-All -I/../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/usr/include -I/usr/local/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/arm-poky-linux-gnueabi -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/backward -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include-fixed -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include ../candbus_interface.h -o moc_candbus_interface.cpp
+	/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc $(DEFINES) --include ./moc_predefs.h -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++ -I/home/chen/work/text/TCU/autotool-servcer -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtWidgets -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/usr/include -I/usr/local/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/arm-poky-linux-gnueabi -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/backward -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include-fixed -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include ../candbus_interface.h -o moc_candbus_interface.cpp
 
-moc_sim800_interface.cpp: ../sim800_interface.h \
-		moc_predefs.h \
-		/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc
-	/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc $(DEFINES) --include ./moc_predefs.h -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++ -I/home/tywl/sxdWork/autotool-All -I/../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/usr/include -I/usr/local/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/arm-poky-linux-gnueabi -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/backward -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include-fixed -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include ../sim800_interface.h -o moc_sim800_interface.cpp
-
-moc_mainwindow.cpp: ../filelistitem.h \
+moc_mainwindow.cpp: ../common.h \
+		../receive/canservice.h \
+		../receive/thread.h \
+		../receive/singletonbase.h \
+		../filelistitem.h \
 		../candbus_interface.h \
 		../QRCode/config.h \
 		../QRCode/mask.h \
@@ -801,26 +828,26 @@ moc_mainwindow.cpp: ../filelistitem.h \
 		../QRCode/qrspec.h \
 		../QRCode/rscode.h \
 		../QRCode/split.h \
-		../sim800_interface.h \
-		../bt_interface.h \
 		../hardkeymonitorinterface_interface.h \
 		../mainwindow.h \
 		moc_predefs.h \
 		/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc
-	/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc $(DEFINES) --include ./moc_predefs.h -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++ -I/home/tywl/sxdWork/autotool-All -I/../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/usr/include -I/usr/local/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/arm-poky-linux-gnueabi -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/backward -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include-fixed -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include ../mainwindow.h -o moc_mainwindow.cpp
+	/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc $(DEFINES) --include ./moc_predefs.h -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++ -I/home/chen/work/text/TCU/autotool-servcer -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtWidgets -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/usr/include -I/usr/local/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/arm-poky-linux-gnueabi -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/backward -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include-fixed -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include ../mainwindow.h -o moc_mainwindow.cpp
 
 moc_hardkeymonitorinterface_interface.cpp: ../hardkeymonitorinterface_interface.h \
 		moc_predefs.h \
 		/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc
-	/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc $(DEFINES) --include ./moc_predefs.h -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++ -I/home/tywl/sxdWork/autotool-All -I/../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/usr/include -I/usr/local/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/arm-poky-linux-gnueabi -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/backward -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include-fixed -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include ../hardkeymonitorinterface_interface.h -o moc_hardkeymonitorinterface_interface.cpp
+	/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc $(DEFINES) --include ./moc_predefs.h -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++ -I/home/chen/work/text/TCU/autotool-servcer -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtWidgets -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/usr/include -I/usr/local/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/arm-poky-linux-gnueabi -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/backward -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include-fixed -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include ../hardkeymonitorinterface_interface.h -o moc_hardkeymonitorinterface_interface.cpp
 
 moc_bt_interface.cpp: ../bt_interface.h \
 		moc_predefs.h \
 		/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc
-	/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc $(DEFINES) --include ./moc_predefs.h -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++ -I/home/tywl/sxdWork/autotool-All -I/../opt/poky-st/2.4.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/usr/include -I/usr/local/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/arm-poky-linux-gnueabi -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/backward -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include-fixed -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include ../bt_interface.h -o moc_bt_interface.cpp
+	/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/bin/qt5/moc $(DEFINES) --include ./moc_predefs.h -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/qt5/mkspecs/linux-oe-g++ -I/home/chen/work/text/TCU/autotool-servcer -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/home/opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQuick -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtWidgets -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtMultimedia -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtGui -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtQml -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtNetwork -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtDBus -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/qt5/QtCore -I. -I/usr/include -I/usr/local/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0 -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/arm-poky-linux-gnueabi -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include/c++/7.3.0/backward -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/gcc/arm-poky-linux-gnueabi/7.3.0/include -I/opt/poky-st/2.4.2/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/7.3.0/include-fixed -I/opt/poky-st/2.4.2/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/include ../bt_interface.h -o moc_bt_interface.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
+compiler_uic_make_all:
+compiler_uic_clean:
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
 compiler_yacc_impl_make_all:
@@ -832,6 +859,10 @@ compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_heade
 ####### Compile
 
 main.o: ../main.cpp ../mainwindow.h \
+		../common.h \
+		../receive/canservice.h \
+		../receive/thread.h \
+		../receive/singletonbase.h \
 		../filelistitem.h \
 		../candbus_interface.h \
 		../QRCode/config.h \
@@ -845,12 +876,14 @@ main.o: ../main.cpp ../mainwindow.h \
 		../QRCode/qrspec.h \
 		../QRCode/rscode.h \
 		../QRCode/split.h \
-		../sim800_interface.h \
-		../bt_interface.h \
 		../hardkeymonitorinterface_interface.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../main.cpp
 
 mainwindow.o: ../mainwindow.cpp ../mainwindow.h \
+		../common.h \
+		../receive/canservice.h \
+		../receive/thread.h \
+		../receive/singletonbase.h \
 		../filelistitem.h \
 		../candbus_interface.h \
 		../QRCode/config.h \
@@ -864,8 +897,6 @@ mainwindow.o: ../mainwindow.cpp ../mainwindow.h \
 		../QRCode/qrspec.h \
 		../QRCode/rscode.h \
 		../QRCode/split.h \
-		../sim800_interface.h \
-		../bt_interface.h \
 		../hardkeymonitorinterface_interface.h \
 		../share.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../mainwindow.cpp
@@ -936,14 +967,31 @@ split.o: ../QRCode/split.c ../QRCode/config.h \
 candbus_interface.o: ../candbus_interface.cpp ../candbus_interface.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o candbus_interface.o ../candbus_interface.cpp
 
-sim800_interface.o: ../sim800_interface.cpp ../sim800_interface.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sim800_interface.o ../sim800_interface.cpp
-
 uartcheck.o: ../uartcheck.cpp ../uartcheck.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o uartcheck.o ../uartcheck.cpp
 
 hardkeymonitorinterface_interface.o: ../hardkeymonitorinterface_interface.cpp ../hardkeymonitorinterface_interface.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o hardkeymonitorinterface_interface.o ../hardkeymonitorinterface_interface.cpp
+
+thread.o: ../receive/thread.cpp ../receive/thread.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o thread.o ../receive/thread.cpp
+
+log.o: ../receive/log.cpp ../receive/log.h \
+		../receive/singletonbase.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o log.o ../receive/log.cpp
+
+cantaskevent.o: ../receive/cantaskevent.cpp ../receive/cantaskevent.h \
+		../receive/singletonbase.h \
+		../receive/log.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cantaskevent.o ../receive/cantaskevent.cpp
+
+canservice.o: ../receive/canservice.cpp ../receive/cantaskevent.h \
+		../receive/singletonbase.h \
+		../receive/canservice.h \
+		../receive/thread.h \
+		../common.h \
+		../receive/log.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o canservice.o ../receive/canservice.cpp
 
 bt_interface.o: ../bt_interface.cpp ../bt_interface.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o bt_interface.o ../bt_interface.cpp
@@ -956,9 +1004,6 @@ moc_filelistitem.o: moc_filelistitem.cpp
 
 moc_candbus_interface.o: moc_candbus_interface.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_candbus_interface.o moc_candbus_interface.cpp
-
-moc_sim800_interface.o: moc_sim800_interface.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_sim800_interface.o moc_sim800_interface.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

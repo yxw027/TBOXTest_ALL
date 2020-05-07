@@ -7,14 +7,17 @@ Item {
     
     Rectangle {
         id:testItem
-        width: parent.width; height: parent.height
-        anchors.left: parent.left; anchors.top: parent.top
+        width: parent.width;
+        height: parent.height
+        anchors.left: parent.left;
+        anchors.top: parent.top
         opacity: 0.9
 
         Loader{
             id: main_page
             anchors.fill: parent
             source: "./mainpage.qml"
+            visible: true
         }
 
         Loader{
@@ -24,20 +27,16 @@ Item {
             source: "./qrCode.qml"
         }
     }
+
     Image {
         id: bg
         visible: false
         anchors.fill: parent
         source: "./image/mainPage/bg.png"
     }
+
     Loader{
-        id: device_connecting_
-        visible: true
-        anchors.centerIn: parent
-        source: "device_connecting.qml"
-    }
-    Loader{
-        id: tooltip_page
+        id: errorTip_page
         visible: false
         x:0
         y:0
@@ -48,22 +47,22 @@ Item {
         }
         function on_show_mainpage()
         {
-            testItem.visible = true;
-            testItem.opacity = 0.9;
             version_page.visible = false;
-            tooltip_page.visible = true;
+            errorTip_page.visible = true;
             udisk_diccon.visible = false;
             device_diccon.visible = false;
             bg.visible = true;
             bg.opacity = 0.8;
         }
     }
+
     Loader{
         id: device_diccon
         visible:  false
         anchors.centerIn: parent
         source: "./device_disconnect.qml"
     }
+
     Loader{
         id: udisk_diccon
         anchors.centerIn: parent
@@ -71,31 +70,28 @@ Item {
         source: "./u_disk_conn_fail.qml"
     }
 
-    Loader{
+    Loader{//delete
         id: version_page
         anchors.fill: parent
         visible: false
         source: "./versionPage.qml"
     }
 
-    //UPGRADE//93
-    Loader{
+    Loader{//delete
         id: upgrade
         visible: true
         anchors.centerIn: parent
         source: "upgrade.qml"
     }
-    //UPGRADE
 
     Connections{
         target: Thread
         onDevice_disconnect:{
             console.log("qml:device disconnect");
-            Thread.chang_stop_flag();
             Thread.disable_12V();
-            if(!tooltip_page.visible)
+            if(!errorTip_page.visible)
             {
-                device_diccon.visible = true;
+//                device_diccon.visible = true;
                 udisk_diccon.visible = false;
                 testItem.opacity = 0.9;
                 device_connecting_.visible = false;
@@ -105,9 +101,8 @@ Item {
         }
         onUdisk_disconnect:{
             console.log("qml:udisk disconnect");
-            Thread.chang_stop_flag();
             Thread.disable_12V();
-            if(!tooltip_page.visible)
+            if(!errorTip_page.visible)
             {
                 testItem.visible = true;
                 udisk_diccon.visible = true;
@@ -130,15 +125,11 @@ Item {
             {
                 if(testItem.visible)
                 {
-                    //console.log("++++++");
+                    console.log("++++++");
                     version_page.visible = true;
                 }
             }
         }
-    }
-
-    Connections{// hide version page
-        target: Thread
         onQrcode: {
             qrcode.visible=true;
             version_page.visible = false;

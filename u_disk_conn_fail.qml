@@ -9,11 +9,13 @@ Item {
         anchors.fill: parent
         source: "./image/mainPage/bg.png"
     }
+
     Image {
         id: device
         anchors.centerIn: parent
         source: "./image/u_disk/u_disk_disconn.png"
     }
+
     Text {
         id: device_name
         anchors.centerIn: device

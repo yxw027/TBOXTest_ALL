@@ -79,7 +79,7 @@ Item {
             errorName = functionName
             errorCode = param;
             Thread.disable_12V();
-            MainWindow.update_db_flag(false);
+//            MainWindow.update_db_flag(false);
             //thread_eixt();
         }
     }

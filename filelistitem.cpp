@@ -187,6 +187,7 @@ void FileListItemModel::insertItem(int index, const FileListItem &item)
 }
 
 void FileListItemModel::setFileNamebyIndex(int index, QString fileName) {
+    printf("RUN setFileNamebyIndex \n");
     m_FileListItem[index].fileName() = fileName;
     emit dataChanged(this->index(index), this->index(index));//update qml listview
 }

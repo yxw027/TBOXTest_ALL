@@ -68,7 +68,8 @@ HEADERS += \
     receive/log.h \
     receive/cantaskevent.h \
     receive/canservice.h \
-    bt_interface.h
+    bt_interface.h \
+    ftimer.h
 
 
 #unix:!macx: LIBS += -L$$PWD/../../../../../opt/poky-st/2.2.1/sysroots/cortexa7hf-neon-poky-linux-gnueabi/usr/lib/ -lsqlite3

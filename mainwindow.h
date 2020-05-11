@@ -74,6 +74,9 @@ extern "C" {
 #include <sqlite3.h>
 
 
+#include <ftimer.h>
+
+
 #define SQLITE_DATABASE_ONE   "/run/media/usb/"
 #define TABLE_NAME          "TBoxData"
 #include "hardkeymonitorinterface_interface.h"
@@ -192,6 +195,9 @@ public:
     void writeDID(Test_Mode_EN cmdId,PROJECT_INFO_EN infoType);
     void canWriteData(Mailbox_Write_Msg_ST data);
     int  confirmTestResult(uint16_t cmdid);
+
+    static void testTimeout();
+
     Q_INVOKABLE void init();
     Q_INVOKABLE void restart();
     Q_INVOKABLE void thread_eixt();
@@ -283,6 +289,8 @@ private:
     int m_mailbox_writefd;
     int m_curTestItemIndex = 0;
     int m_readDIDLen;
+
+    Timer* p_ftimer;
 };
 
 class MainWindow : public QQuickView

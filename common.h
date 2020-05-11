@@ -51,9 +51,9 @@ typedef struct _mailbox_write_msg_tag
 typedef struct _mailbox_read_msg_tag
 {
     uint32_t  canId;//4
-    uint16_t  cmdId;//2
-    uint16_t  dataHeader;//2
     uint8_t   data[CAN_DATA_LEN];//4
+    uint16_t  dataHeader;//2
+    uint16_t  cmdId;//2
 }Mailbox_Read_Msg_ST;
 
 enum{
@@ -130,6 +130,9 @@ enum{
     ErrorCode4GTest = 130,
     ErrorCodeACC = 100,
     ErrorCodeUSBRW = 140,
+    ErrorCodeRS232 = 150,
+
+
 
     ErrorCodeSoftWare = 200,
     ErrorCodeHardWare = 201,
@@ -145,6 +148,16 @@ enum{
 
     ErrorFactory = 300,
 };
+
+typedef enum _test_result_tag{
+
+    TESTRESULT_FAIL = 0,
+    TESTRESULT_OK
+
+}TESTRESULT;
+
+
+
 
 typedef struct _qrcode_show_flag_tag
 {

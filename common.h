@@ -101,7 +101,7 @@ typedef enum _test_mode_tag
     TEST_4GWAKE_MODULE      = 0xFD08,//
     TEST_4GIOT_MODULE       = 0xFD09,
     TEST_GPS_MODULE         = 0xFD0A,
-    TEST_SYATEM_SLEEP_MODULE= 0xFD0C,
+    TEST_SYSTEM_SLEEP_MODULE= 0xFD0C,
     TEST_PWR_MODULE         = 0xFD0D,
 
     TEST_MIC_MODULE         = 0xFC01,//
@@ -111,6 +111,11 @@ typedef enum _test_mode_tag
     TEST_ADC_MODULE         = 0xFC05,
     TEST_VIN_WRITE          = 0xFC06,
     TEST_PD_TIME_WRITE      = 0xFC07,
+
+    TEST_GPIO_IN_MODULE     = 0xFC08,
+    TEST_GPIO_OUT_MODULE    = 0xFC09,
+    TEST_ACC_MODULE         = 0xFC0A,
+
 
     TEST_QR_SHOW            = 0xFB01
 }Test_Mode_EN;
@@ -131,6 +136,9 @@ enum{
     ErrorCodeACC = 100,
     ErrorCodeUSBRW = 140,
     ErrorCodeRS232 = 150,
+    ErrorCodeGPIOIN = 170,
+    ErrorCodeGPIOOUT = 180,
+    ErrorCodeADC = 190,
 
 
 

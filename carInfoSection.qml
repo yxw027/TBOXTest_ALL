@@ -88,6 +88,36 @@ Item {
         model:TestNameMode2
         delegate: carInfoDelegate1
         interactive: false
+
+
+    }
+
+
+    Connections{
+        target: Thread
+        onUpdateInfo:{
+
+//            Thread.logOut(" onUpdateInfo ");
+
+//            var filepath = TestNameMode2.get(index,"FileName");
+//            Thread.logOut(filepath);
+
+//            TestNameMode2.setData(index,filename,index);
+//            TestNameMode2.data(index,index);
+
+//            Thread.logOut(index)
+//            Thread.logOut(filename)
+
+//            var filepath2 = TestNameMode2.get(index,"FileName");
+//            Thread.logOut(filepath);
+
+//            console.log("test update~~~~~~~~~~~~~~");
+//            carIfo2.Visible = false;
+
+//            TestNameMode2.setFileNamebyIndex(index,filename);
+
+        }
+
     }
 }
 

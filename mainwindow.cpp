@@ -32,17 +32,20 @@ int strTestItemHexFlag[] =
     TEST_4GWAKE_MODULE,
     TEST_GPS_MODULE,
     TEST_MIC_MODULE,
-    TEST_SYATEM_SLEEP_MODULE,   //12
+    TEST_SYSTEM_SLEEP_MODULE,   //12
     TEST_V2X_MODULE,
     TEST_USB_MODULE,
     TEST_PWR_MODULE,
     TEST_SPK_MODULE,            //16
     TEST_RS232_MODULE,
-    TEST_GPIO_MODULE,
+    TEST_GPIO_IN_MODULE,
+    TEST_GPIO_OUT_MODULE,
+    TEST_ACC_MODULE,            //20
     TEST_ADC_MODULE,
-    TEST_VIN_WRITE,             //20
+    TEST_VIN_WRITE,
     TEST_PD_TIME_WRITE,
     TEST_QR_SHOW
+
     //reserved2
     //reserved3
     
@@ -229,6 +232,10 @@ void FortuneThread::iniTableViewByCarinfo()
         FileListItem item(str[i], "XXXXXXXXXX", i);
         tableMode2->addFileListItem(item);
     }
+
+    //    tableModel->setFileNamebyIndex(1,"CCCCCCCCCCCCCCCCC");
+
+    //    tableMode2->setFileNamebyIndex(1,"TTTTTTTTTTTTTTTTT");
 }
 
 void FortuneThread::initTestListView()// test item list
@@ -301,7 +308,7 @@ void FortuneThread::initTestListView()// test item list
                 serial++;
             }
         }
-        item = FileListItem("", "0000", m_testItemCount);
+        item = FileListItem("测试结束", "0000", m_testItemCount);
         listModel->addFileListItem(item);
         item = FileListItem("", "0000", m_testItemCount+1);
         listModel->addFileListItem(item);
@@ -473,7 +480,7 @@ QString FortuneThread::getNameForIndex(int index, int command)
             str = "SPK测试";
             break;
             
-        case TEST_SYATEM_SLEEP_MODULE:
+        case TEST_SYSTEM_SLEEP_MODULE:
             str = "系统点火休眠测试";
             break;
             
@@ -501,6 +508,18 @@ QString FortuneThread::getNameForIndex(int index, int command)
             str = "读取软件版本";
             break;
 
+        case TEST_GPIO_IN_MODULE:
+            str = "GPIO输入测试";
+            break;
+
+        case TEST_GPIO_OUT_MODULE:
+            str = "GPIO输出测试";
+            break;
+
+        case TEST_ACC_MODULE:
+            str = "ACC测试";
+            break;
+
         default:
             break;
         }
@@ -526,6 +545,12 @@ void FortuneThread::disable_12V()
     stop_monitorusb = true;
     system("echo out > /sys/class/gpio/gpio6/direction");
     system("echo 0 > /sys/class/gpio/gpio6/value");
+}
+
+void FortuneThread::logOut(QString log)
+{
+    DEBUG_CHAR("qml ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ log");
+    DEBUG_PARAM("[QML_LOG] ",log);
 }
 
 QPixmap FortuneThread::generateQRcode(QString tempstr)
@@ -877,28 +902,28 @@ void FortuneThread::readDID(Mailbox_Read_Msg_ST &message)
     DEBUG_PARAM("m_readDIDInfo.size  ",m_readDIDInfo.size());
 
     DEBUGLOG;
-    if(m_readDIDLen <= m_readDIDInfo.size()){
+    if(m_readDIDLen = m_readDIDInfo.size()){
         DEBUGLOG;
 
 
-        qDebug()<<tableMode2->getFilePathByIndex(4);
-        qDebug()<<tableMode2->getFilePathByIndex(5);
-        qDebug()<<tableMode2->getFilePathByIndex(6);
-        qDebug()<<tableMode2->getFilePathByIndex(7);
+        switch (message.dataHeader) {
+        case DID_SW_VERSION:{
+            this->tableMode2->setFileNamebyIndex(3, m_readDIDInfo);
+            break;
+        }
+        case DID_HW_VERSION:{
+            this->tableMode2->setFileNamebyIndex(2, m_readDIDInfo);
+            break;
+        }
+        }
 
-        qDebug()<<tableMode2->getFileNameByIndex(4);
-        qDebug()<<tableMode2->getFileNameByIndex(5);
-        qDebug()<<tableMode2->getFileNameByIndex(6);
-        qDebug()<<tableMode2->getFileNameByIndex(7);
-
-        tableMode2->setFileNamebyIndex(7, m_readDIDInfo);
-
-        qDebug()<<"after -- " << tableMode2->getFilePathByIndex(7);
-
-        startNextTestItem();
+        DEBUGLOG;
 
         m_readDIDLen = 0;
         m_readDIDInfo = "";
+
+        DEBUGLOG;
+        startNextTestItem();
     }
 }
 
@@ -1007,7 +1032,7 @@ void FortuneThread::handleCandataMessage(Mailbox_Read_Msg_ST &message)
         DEBUG_CHAR("rec TEST_GPS_MODULE ack! \r\n");
         handleTestItemAck(message.dataHeader,m_tempCmdId);
         break;
-    case TEST_SYATEM_SLEEP_MODULE:
+    case TEST_SYSTEM_SLEEP_MODULE:
         DEBUG_CHAR("rec TEST_SYATEM_SLEEP_MODULE ack! \r\n");
         handleTestItemAck(message.dataHeader,m_tempCmdId);
         break;
@@ -1035,6 +1060,22 @@ void FortuneThread::handleCandataMessage(Mailbox_Read_Msg_ST &message)
         DEBUG_CHAR("rec TEST_ADC_MODULE ack! \r\n");
         handleTestItemAck(message.dataHeader,m_tempCmdId);
         break;
+
+    case TEST_GPIO_IN_MODULE:
+        DEBUG_CHAR("rec TEST_ADC_MODULE ack! \r\n");
+        handleTestItemAck(message.dataHeader,m_tempCmdId);
+        break;
+
+    case TEST_GPIO_OUT_MODULE:
+        DEBUG_CHAR("rec TEST_ADC_MODULE ack! \r\n");
+        handleTestItemAck(message.dataHeader,m_tempCmdId);
+        break;
+
+    case TEST_ACC_MODULE:
+        DEBUG_CHAR("rec TEST_ADC_MODULE ack! \r\n");
+        handleTestItemAck(message.dataHeader,m_tempCmdId);
+        break;
+
     case TEST_DID_WRITE:
     {
         if(message.dataHeader > 0)
@@ -1098,6 +1139,7 @@ int  FortuneThread::confirmTestResult(uint16_t cmdid)
     
     switch (cmdid) {
     case TEST_GPIO_MODULE:
+        ret = 1;
         break;
         
     case TEST_RS232_MODULE:
@@ -1105,6 +1147,7 @@ int  FortuneThread::confirmTestResult(uint16_t cmdid)
         break;
         
     case TEST_ADC_MODULE:
+        ret = 1;
         break;
 
     default:
@@ -1123,6 +1166,8 @@ void FortuneThread::testTimeout()
 
 void FortuneThread::startNextTestItem()
 {
+    m_canWriteData.dataHeader = 0x0000;
+
     emit nextOne();
     m_curTestItemIndex++;
     if(m_curTestItemIndex != listModel->rowCount()-1)
@@ -1295,6 +1340,26 @@ void FortuneThread::handleErrorItem(int curItem)
     case TEST_RS232_MODULE:
         errorName = "RS232通讯";
         errorNumber = ErrorCodeRS232;
+        break;
+
+    case TEST_ADC_MODULE:
+        errorName = "ADC检测";
+        errorNumber = ErrorCodeADC;
+        break;
+
+    case TEST_GPIO_IN_MODULE:
+        errorName = "GPIO输入测试";
+        errorNumber = ErrorCodeGPIOIN;
+        break;
+
+    case TEST_GPIO_OUT_MODULE:
+        errorName = "GPIO输出测试";
+        errorNumber = ErrorCodeGPIOOUT;
+        break;
+
+    case TEST_ACC_MODULE:
+        errorName = "ACC测试";
+        errorNumber = ErrorCodeACC;
         break;
 
     default:

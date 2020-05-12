@@ -4,6 +4,7 @@
 
 class FileListItem
 {
+
 public:
     FileListItem() {}
     FileListItem(QString filePath, QString fileName, int index ):m_filePath(filePath),m_fileName(fileName),m_index(index)
@@ -59,6 +60,11 @@ public:
     Q_INVOKABLE QString getFilePathByIndex(int index);
 
     QString getFileNameByIndex(int index);
+
+    /**
+      fpp add cpp set function 20200512
+    */
+
 
     //Q_INVOKABLE bool getAvailableStateByIndex(int index);
 

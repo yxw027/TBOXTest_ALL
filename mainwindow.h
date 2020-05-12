@@ -203,6 +203,9 @@ public:
     Q_INVOKABLE void thread_eixt();
     Q_INVOKABLE void disable_12V();
 
+    //fpp
+    Q_INVOKABLE void logOut(QString log);
+
 signals:
     void errorCode(QString functionName, int param);
     void qrcode();
@@ -226,6 +229,7 @@ signals:
     void osVersion(QString os_buf);
     void sysVersion(QString sys_buf);
     void setTitleText(QString tText);
+    void updateInfo(int index,QString filename);
 
 public slots:
     void onSigQrGroup();

@@ -22,7 +22,7 @@ QString FileListItem::filePath() const
 
 void FileListItem::setfilePath(QString filePath)
 {
-     m_filePath =  filePath;
+    m_filePath =  filePath;
 }
 
 QString FileListItem::fileName() const
@@ -77,7 +77,16 @@ int FileListItem::index() const
 
 void FileListItem::setfileName(QString fileName)
 {
-     m_fileName = fileName;
+    printf("setfileName \n");
+//    printf("sss %s \n", m_fileName.toLocal8Bit().data());
+//    printf("sss %s \n", this->fileName());
+//    printf("sss %s \n", m_fileName.toLocal8Bit().data());
+//    printf("sss %s \n", fileName.toLocal8Bit().data());
+
+    this->m_fileName = fileName;
+
+    printf(" after setfileName \n");
+
 }
 
 /*****************************************************************************
@@ -125,6 +134,7 @@ void FileListItem::setAvailable(bool able)
 *****************************************************************************/
 void FileListItemModel::addFileListItem(const FileListItem &item)
 {
+    printf("addFileListItem \n");
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_FileListItem << item;
     endInsertRows();
@@ -187,8 +197,18 @@ void FileListItemModel::insertItem(int index, const FileListItem &item)
 }
 
 void FileListItemModel::setFileNamebyIndex(int index, QString fileName) {
-    printf("RUN setFileNamebyIndex \n");
-    m_FileListItem[index].fileName() = fileName;
+    printf("RUN setFileNamebyIndex %d %s \n" ,index,fileName.toLocal8Bit().data());
+
+//    printf("==== this fileName ==== %s \n", m_FileListItem[index].fileName().toLocal8Bit().data());
+
+    //    m_FileListItem.at(index).setfileName(fileName);
+    m_FileListItem[index].setfileName(fileName);
+    //    this->m_FileListItem.setfileName(fileName);
+//    m_FileListItem[index].setfilePath(fileName);
+
+
+    printf("after set filename \n");
+    //    m_FileListItem[index].fileName() = fileName;
     emit dataChanged(this->index(index), this->index(index));//update qml listview
 }
 
@@ -297,8 +317,8 @@ QVariant FileListItemModel :: get(int index, QString role)
         return item.index();
     else if (role == "FileName")
         return item.fileName();
-//    else if (role == "Available")
-//        return item.available();
+    //    else if (role == "Available")
+    //        return item.available();
     else
         return QVariant();
 }
@@ -351,10 +371,10 @@ QVariant  FileListItemModel :: data(const QModelIndex & index, int role) const//
         return item.index();
     else if (role == FileName)
         return item.fileName();
-//    else if (role == Available)
-//        return item.available();
-//    else if (role == ResultRole)
-//        return item.result();
+    //    else if (role == Available)
+    //        return item.available();
+    //    else if (role == ResultRole)
+    //        return item.result();
     else
         return QVariant();
 }
@@ -380,8 +400,8 @@ QHash<int, QByteArray>  FileListItemModel :: roleNames() const//////////////////
     roles[FilePathRole] = "FilePath";
     roles[IndexRole] = "Index";
     roles[FileName] = "FileName";
-//    roles[Available] = "Available";
-//    roles[ResultRole] = "Result";
+    //    roles[Available] = "Available";
+    //    roles[ResultRole] = "Result";
 
     return roles;
 }

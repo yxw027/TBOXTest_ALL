@@ -37,6 +37,9 @@ using namespace std;
 #define CAN_HEADER_LEN           8
 #define CAN_DATA_LEN             4
 
+//fpp 200519
+#define TEST_TIMEOUT_TIME       3000
+
 typedef struct _mailbox_write_msg_tag
 {
     uint32_t  hlc;//4

@@ -172,6 +172,16 @@ public:
     int fd;
 };
 
+//fpp 200519
+class TimeThread : public QThread
+{
+public:
+    void run() Q_DECL_OVERRIDE;
+public slots:
+    void testATimeout();
+
+};
+
 class FortuneThread : public QThread, public QQuickImageProvider
 {
     Q_OBJECT
@@ -295,6 +305,8 @@ private:
     int m_readDIDLen;
 
     Timer* p_ftimer;
+    TimeThread* p_timeThread;
+
 };
 
 class MainWindow : public QQuickView

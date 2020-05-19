@@ -659,7 +659,12 @@ void FortuneThread::run()
     //    p_ftimer->StartTimer(2000, std::bind(testTimeout));
     
     //    this->exec();
-    
+
+
+
+    p_timeThread->start();
+
+    /****
     std::thread([this](){
 
 
@@ -690,7 +695,7 @@ void FortuneThread::run()
     
     ).detach();
     
-    
+    */
     
     /*********************
     m_canWriteData.cmdId = TEST_DID_READ;
@@ -1166,6 +1171,7 @@ void FortuneThread::testTimeout()
 
 void FortuneThread::startNextTestItem()
 {
+    p_timeThread->quit();
     m_canWriteData.dataHeader = 0x0000;
 
     emit nextOne();
@@ -1188,30 +1194,36 @@ void FortuneThread::startNextTestItem()
             break;
         }
         DEBUG_CHAR("[BEFORE]********canWriteData********");
+
+        //        std::thread([this](){
+        //            std::this_thread::sleep_for(std::chrono::milliseconds(TEST_TIMEOUT_TIME));
+        //            testTimeout();
+        //        }).detach();
+        p_timeThread->start();
         canWriteData(m_canWriteData);
     }
     else
     {
         DEBUGLOG;
-        m_canWriteData.cmdId = TEST_DID_WRITE;
-        int vinFlag = m_MapTestItemFlag.find(TEST_VIN_WRITE).value();
-        int pdateFlag = m_MapTestItemFlag.find(TEST_PD_TIME_WRITE).value();
-        bool bret = (vinFlag > 0 || pdateFlag > 0);
-        if(bret)
-        {
-            if(vinFlag > 0)
-            {
-                writeDID(TEST_DID_WRITE,DID_VIN);
-            }
-            if(pdateFlag > 0)
-            {
-                writeDID(TEST_DID_WRITE,DID_PRODUCED_DATE);
-            }
-        }
-        else
-        {
-            handleQrcode();
-        }
+        //        m_canWriteData.cmdId = TEST_DID_WRITE;
+        //        int vinFlag = m_MapTestItemFlag.find(TEST_VIN_WRITE).value();
+        //        int pdateFlag = m_MapTestItemFlag.find(TEST_PD_TIME_WRITE).value();
+        //        bool bret = (vinFlag > 0 || pdateFlag > 0);
+        //        if(bret)
+        //        {
+        //            if(vinFlag > 0)
+        //            {
+        //                writeDID(TEST_DID_WRITE,DID_VIN);
+        //            }
+        //            if(pdateFlag > 0)
+        //            {
+        //                writeDID(TEST_DID_WRITE,DID_PRODUCED_DATE);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            handleQrcode();
+        //        }
     }
 }
 
@@ -2148,4 +2160,31 @@ void encode::run()
 void encode::stoprecord()
 {
     flag=false;
+}
+
+void TimeThread::run()
+{
+
+    qDebug() << "QThread begin" << endl;
+    qDebug() << "child thread" << QThread::currentThreadId() << endl;
+//    QThread::sleep(5);
+    qDebug() << "QThread end"   << endl;
+    DEBUGLOG;
+
+//    m_pTestItemTimer = new QTimer;
+    QTimer timer;
+    connect(timer,SIGNAL(timeout()), this, SLOT(testATimeout()));
+
+    DEBUGLOG;
+    timer->start(5000);//2s
+    DEBUGLOG;
+
+    exec();
+
+}
+
+void TimeThread::testATimeout()
+{
+
+    qDebug() << "testATimeout";
 }

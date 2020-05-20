@@ -207,6 +207,11 @@ FortuneThread::FortuneThread(): QQuickImageProvider(QQuickImageProvider::Pixmap)
     //    m_pTestItemTimer = new QTimer;
     //    connect( m_pTestItemTimer,SIGNAL(timeout()), this, SLOT(onTestItemTimeout()));
     connect(this,SIGNAL(sigQrGroup()), this, SLOT(onSigQrGroup()));
+
+    //fpp
+    m_timeThread = new TimeThread;
+    m_timeThread->start();
+
 }
 
 FortuneThread::~FortuneThread()
@@ -380,6 +385,7 @@ void FortuneThread::onTestItemTimeout()
     
     DEBUGLOG;
     //    m_pTestItemTimer->stop();
+    m_timeThread->quit();
     
     if(m_canWriteData.cmdId == TEST_FACTORY_MODULE)
     {
@@ -387,6 +393,7 @@ void FortuneThread::onTestItemTimeout()
         DEBUG_CHAR("[BEFORE]********canWriteData********");
         canWriteData(m_canWriteData);
         //        m_pTestItemTimer->start(2000);//2s
+        m_timeThread->start();
         sleep(2);
         DEBUG_CHAR("TEST_FACTORY_MODULE timeout");
     }
@@ -660,11 +667,6 @@ void FortuneThread::run()
     
     //    this->exec();
 
-
-
-    p_timeThread->start();
-
-    /****
     std::thread([this](){
 
 
@@ -695,7 +697,7 @@ void FortuneThread::run()
     
     ).detach();
     
-    */
+
     
     /*********************
     m_canWriteData.cmdId = TEST_DID_READ;
@@ -1171,7 +1173,8 @@ void FortuneThread::testTimeout()
 
 void FortuneThread::startNextTestItem()
 {
-    p_timeThread->quit();
+    m_timeThread->start();
+
     m_canWriteData.dataHeader = 0x0000;
 
     emit nextOne();
@@ -1194,36 +1197,30 @@ void FortuneThread::startNextTestItem()
             break;
         }
         DEBUG_CHAR("[BEFORE]********canWriteData********");
-
-        //        std::thread([this](){
-        //            std::this_thread::sleep_for(std::chrono::milliseconds(TEST_TIMEOUT_TIME));
-        //            testTimeout();
-        //        }).detach();
-        p_timeThread->start();
         canWriteData(m_canWriteData);
     }
     else
     {
         DEBUGLOG;
-        //        m_canWriteData.cmdId = TEST_DID_WRITE;
-        //        int vinFlag = m_MapTestItemFlag.find(TEST_VIN_WRITE).value();
-        //        int pdateFlag = m_MapTestItemFlag.find(TEST_PD_TIME_WRITE).value();
-        //        bool bret = (vinFlag > 0 || pdateFlag > 0);
-        //        if(bret)
-        //        {
-        //            if(vinFlag > 0)
-        //            {
-        //                writeDID(TEST_DID_WRITE,DID_VIN);
-        //            }
-        //            if(pdateFlag > 0)
-        //            {
-        //                writeDID(TEST_DID_WRITE,DID_PRODUCED_DATE);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            handleQrcode();
-        //        }
+        m_canWriteData.cmdId = TEST_DID_WRITE;
+        int vinFlag = m_MapTestItemFlag.find(TEST_VIN_WRITE).value();
+        int pdateFlag = m_MapTestItemFlag.find(TEST_PD_TIME_WRITE).value();
+        bool bret = (vinFlag > 0 || pdateFlag > 0);
+        if(bret)
+        {
+            if(vinFlag > 0)
+            {
+                writeDID(TEST_DID_WRITE,DID_VIN);
+            }
+            if(pdateFlag > 0)
+            {
+                writeDID(TEST_DID_WRITE,DID_PRODUCED_DATE);
+            }
+        }
+        else
+        {
+            handleQrcode();
+        }
     }
 }
 
@@ -1526,6 +1523,7 @@ MainWindow::MainWindow()
     m_sSerialShow = "";
     m_msiDBTerm.clear();
     
+
     thread_m = new FortuneThread;
     rootContext()->setContextProperty("Thread", thread_m);
     
@@ -1545,7 +1543,7 @@ MainWindow::MainWindow()
     
     m_pConnectServerTime = new QTimer;
     connect( m_pConnectServerTime,SIGNAL(timeout()), this, SLOT(onConnectServer()));
-    
+
     DEBUGLOG;
 }
 
@@ -2164,27 +2162,10 @@ void encode::stoprecord()
 
 void TimeThread::run()
 {
-
-    qDebug() << "QThread begin" << endl;
-    qDebug() << "child thread" << QThread::currentThreadId() << endl;
-//    QThread::sleep(5);
-    qDebug() << "QThread end"   << endl;
-    DEBUGLOG;
-
-//    m_pTestItemTimer = new QTimer;
-    QTimer timer;
-    connect(timer,SIGNAL(timeout()), this, SLOT(testATimeout()));
-
-    DEBUGLOG;
-    timer->start(5000);//2s
-    DEBUGLOG;
-
-    exec();
-
+    testATimeout();
 }
 
 void TimeThread::testATimeout()
 {
-
-    qDebug() << "testATimeout";
+    qDebug()<< __FUNCTION__<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&";
 }

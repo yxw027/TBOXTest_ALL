@@ -177,8 +177,10 @@ class TimeThread : public QThread
 {
 public:
     void run() Q_DECL_OVERRIDE;
-public slots:
+//public slots:
     void testATimeout();
+
+    QTimer * timeoutTimer;
 
 };
 
@@ -305,7 +307,8 @@ private:
     int m_readDIDLen;
 
     Timer* p_ftimer;
-    TimeThread* p_timeThread;
+    //fpp
+    TimeThread * m_timeThread = nullptr;
 
 };
 
@@ -351,6 +354,8 @@ public:
     QString m_sSerialShow;
     bool m_bSIM;
     
+
+
 private:
     sqlite3 *m_pdb;
     QString m_sDBTerm;
